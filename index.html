@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <title>Atelier 4·2</title>
+  <meta name="description" content="Atelier 4·2 — 대지 다이어그램·레이저 모형(Terrain)과 건축사 암기 퀴즈(Quiz).">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    /* Instrument Sans 600 (SIL OFL), self-hosted, logo only */
+    @font-face {
+      font-family: "Instrument Sans"; font-style: normal; font-weight: 600; font-display: swap;
+      src: url(./fonts/instrument-sans-latin-ext-600-normal.woff2) format("woff2");
+      unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Instrument Sans"; font-style: normal; font-weight: 600; font-display: swap;
+      src: url(./fonts/instrument-sans-latin-600-normal.woff2) format("woff2");
+      unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+    }
+
+    :root {
+      color-scheme: light;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #e5e5ea;
+      --divider: #d2d2d7;
+      --surface: #f5f5f7;
+      --paper: #ffffff;
+      --background: #ffffff;
+      --nav: rgb(255 255 255 / 86%);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --ink: #f5f5f7;
+        --muted: #a1a1a6;
+        --line: #38383a;
+        --divider: #48484a;
+        --surface: #1d1d1f;
+        --paper: #111113;
+        --background: #000000;
+        --nav: rgb(0 0 0 / 86%);
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --ink: #f5f5f7; --muted: #a1a1a6; --line: #38383a; --divider: #48484a;
+      --surface: #1d1d1f; --paper: #111113; --background: #000000; --nav: rgb(0 0 0 / 86%);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: var(--background);
+      color: var(--ink);
+      font: 16px/1.55 "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont,
+        system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+
+    .page-header {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--nav);
+      backdrop-filter: saturate(180%) blur(16px);
+      -webkit-backdrop-filter: saturate(180%) blur(16px);
+      border-bottom: 1px solid var(--divider);
+    }
+    .nav-inner {
+      max-width: 1160px; margin: 0 auto; padding: 4px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .brand {
+      display: inline-flex; align-items: center; min-height: 44px; padding: 12px 10px 12px 0;
+      font-family: "Instrument Sans", sans-serif; font-weight: 600; font-size: 20px;
+      letter-spacing: .02em; line-height: 1; text-decoration: none;
+    }
+    .site-switch {
+      display: inline-flex; gap: 2px; padding: 3px; border-radius: 980px; background: var(--surface);
+    }
+    .site-switch a {
+      padding: 6px 12px; border-radius: 980px; font-size: 13px; font-weight: 600;
+      color: var(--muted); text-decoration: none;
+    }
+    .site-switch a:hover { color: var(--ink); }
+
+    main {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 96px 0 48px;
+      text-align: center;
+      word-break: keep-all;
+    }
+    .eyebrow {
+      margin: 0 0 16px;
+      font-family: "Instrument Sans", sans-serif; font-weight: 600; font-size: 13px;
+      letter-spacing: .02em; color: var(--muted);
+    }
+    h1 {
+      margin: 0 0 20px;
+      font-size: clamp(40px, 5vw, 56px); line-height: 1.16; letter-spacing: -.03em; font-weight: 700;
+      text-wrap: balance;
+    }
+    .subhead {
+      max-width: 640px; margin: 0 auto;
+      color: var(--muted); font-size: clamp(18px, 2vw, 22px); line-height: 1.55; letter-spacing: -.015em;
+      text-wrap: balance;
+    }
+
+    .tools {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;
+      max-width: 760px; margin: 48px auto 0; padding: 0; list-style: none; text-align: left;
+    }
+    .tool {
+      position: relative; display: flex; flex-direction: column; min-width: 0;
+      padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper);
+      transition: border-color 140ms ease;
+    }
+    .tool:hover, .tool:focus-within { border-color: var(--ink); }
+    .tool-num {
+      margin: 0; font-family: "Instrument Sans", sans-serif; font-weight: 600; font-size: 13px; color: var(--muted);
+    }
+    .tool h2 {
+      margin: 12px 0 2px; font-family: "Instrument Sans", sans-serif; font-size: 28px; font-weight: 600;
+      letter-spacing: .01em; line-height: 1.2;
+    }
+    .tool-kicker { margin: 0 0 12px; font-size: 15px; font-weight: 700; }
+    .tool-desc { flex-grow: 1; margin: 0; font-size: 15px; line-height: 1.6; color: var(--muted); }
+    .tool-list {
+      margin: 20px 0 0; padding: 16px 0 0; list-style: none; border-top: 1px solid var(--line);
+      display: grid; gap: 6px; font-size: 14px; color: var(--ink);
+    }
+    .tool-list li::before { content: "·"; margin-right: 8px; color: var(--muted); }
+    .tool a.go {
+      align-self: flex-start; margin-top: 20px; min-height: 44px; display: inline-flex; align-items: center;
+      font-size: 16px; font-weight: 700; text-decoration: none;
+    }
+    .tool a.go::after { content: ""; position: absolute; inset: 0; border-radius: 18px; }
+    .tool a.go:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+    footer {
+      width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 40px;
+      text-align: center; font-size: 12px; color: var(--muted);
+    }
+    footer b { font-family: "Instrument Sans", sans-serif; font-weight: 600; color: var(--ink); }
+
+    @media (max-width: 640px) {
+      .nav-inner { padding: 4px 16px; }
+      main { padding-top: 48px; }
+      .subhead br { display: none; }
+      .tools { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 32px; }
+      .tool { padding: 22px; }
+      .tool h2 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div class="nav-inner">
+      <a class="brand" href="./" aria-label="Atelier 4·2 메인페이지">4·2</a>
+      <nav class="site-switch" aria-label="Atelier 4·2 사이트">
+        <a href="https://atelier-4-2.github.io/site/">Terrain</a>
+        <a href="https://atelier-4-2.github.io/quiz/">Quiz</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <p class="eyebrow">Atelier 4·2</p>
+    <h1>건축 학생을 위한<br>작은 도구들</h1>
+    <p class="subhead">대지를 읽고 모형을 만드는 도구와,<br>시험 전에 건물을 외우는 카드.</p>
+
+    <ul class="tools">
+      <li class="tool">
+        <p class="tool-num">01</p>
+        <h2>Terrain</h2>
+        <p class="tool-kicker">대지 다이어그램 · 레이저 모형</p>
+        <p class="tool-desc">주소 하나로 IGN·지적·PLU 데이터를 모아 대지 다이어그램과 지형·건물 모형 도면을 만듭니다.</p>
+        <ul class="tool-list">
+          <li>대지 다이어그램 · 3D 매스</li>
+          <li>지형 등고선 · 건물 레이저 도면</li>
+          <li>PDF · SVG · DXF · STL · 3DM</li>
+        </ul>
+        <a class="go" href="https://atelier-4-2.github.io/site/">Terrain 열기 ›</a>
+      </li>
+      <li class="tool">
+        <p class="tool-num">02</p>
+        <h2>Quiz</h2>
+        <p class="tool-kicker">사진으로 외우는 건축사</p>
+        <p class="tool-desc">강의 슬라이드 사진을 보고 건물 이름·건축가·연도를 맞히는 암기 카드입니다. 직접 덱을 만들 수도 있습니다.</p>
+        <ul class="tool-list">
+          <li>플래시카드 · 간격 반복 복습</li>
+          <li>4지선다 · 사진 퀴즈 · 실전 3문제</li>
+          <li>헷갈리는 쌍 · 나만의 덱</li>
+        </ul>
+        <a class="go" href="https://atelier-4-2.github.io/quiz/">Quiz 열기 ›</a>
+      </li>
+    </ul>
+  </main>
+
+  <footer>
+    <b>Atelier 4·2</b> · 설치 없이 브라우저에서 바로 쓰는 도구
+  </footer>
+</body>
+</html>
