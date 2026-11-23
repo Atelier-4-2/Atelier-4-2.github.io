@@ -167,27 +167,70 @@
       .tool { padding: 22px; }
       .tool h2 { font-size: 24px; }
     }
+    .nav-right { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .hub-drive-btn {
+      flex: none; min-height: 32px; padding: 5px 12px; border-radius: 980px;
+      border: 1px solid var(--divider); background: var(--paper); color: var(--ink);
+      font: 600 12px/1.2 inherit; cursor: pointer; white-space: nowrap;
+    }
+    .hub-drive-btn.on { background: var(--ink); color: var(--background); border-color: var(--ink); }
+    .my-projects {
+      max-width: 1080px; margin: 36px auto 0; padding: 22px; text-align: left;
+      border: 1px solid var(--line); border-radius: 18px; background: var(--paper);
+    }
+    .mp-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+    .mp-head h2 { margin: 0; font-size: 20px; }
+    .mp-head .mp-user { font-size: 13px; color: var(--muted); }
+    .mp-form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .mp-form input { flex: 1 1 200px; min-height: 38px; padding: 0 12px; border: 1px solid var(--divider); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; }
+    .mp-btn { min-height: 38px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--ink); background: var(--ink); color: var(--background); font: 600 13px/1 inherit; cursor: pointer; }
+    .mp-btn.ghost { background: transparent; color: var(--ink); border-color: var(--divider); }
+    .mp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+    .mp-card { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); display: grid; gap: 10px; }
+    .mp-card b { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mp-links { display: flex; flex-wrap: wrap; gap: 6px; }
+    .mp-links a { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--divider); background: var(--paper); font-size: 12px; font-weight: 600; text-decoration: none; }
+    .mp-links a:hover { border-color: var(--ink); }
   </style>
 </head>
 <body>
   <header class="page-header">
     <div class="nav-inner">
       <a class="brand" href="./" aria-label="Atelier 4·2 메인페이지">4·2</a>
-      <nav class="site-switch" aria-label="Atelier 4·2 사이트">
-        <a href="https://atelier-4-2.github.io/site/">Terrain</a>
-        <a href="https://atelier-4-2.github.io/board/">Board</a>
-        <a href="https://atelier-4-2.github.io/view/">View</a>
-        <a href="https://atelier-4-2.github.io/crit/">Crit</a>
-        <a href="https://atelier-4-2.github.io/share/">Share</a>
-        <a href="https://atelier-4-2.github.io/quiz/">Quiz</a>
-      </nav>
+      <div class="nav-right">
+        <nav class="site-switch" aria-label="Atelier 4·2 사이트">
+          <a href="https://atelier-4-2.github.io/site/">Terrain</a>
+          <a href="https://atelier-4-2.github.io/board/">Board</a>
+          <a href="https://atelier-4-2.github.io/view/">View</a>
+          <a href="https://atelier-4-2.github.io/crit/">Crit</a>
+          <a href="https://atelier-4-2.github.io/share/">Share</a>
+          <a href="https://atelier-4-2.github.io/quiz/">Quiz</a>
+        </nav>
+        <button type="button" class="hub-drive-btn" id="hubDriveBtn">Drive 로그인</button>
+      </div>
     </div>
   </header>
 
   <main>
     <p class="eyebrow">Atelier 4·2</p>
     <h1>건축 학생을 위한<br>작은 도구들</h1>
-    <p class="subhead">대지를 읽고 모형을 만드는 도구, 패널을 짜는 보드, 프로젝트 자료 공유, <br>Rhino 모델 보기, 크리틱 기록, 건축사 암기 카드</p>
+    <p class="subhead">대지를 읽고 모형을 만드는 도구, 패널을 짜는 보드, 프로젝트 자료 공유, <br>Rhino 모델 보기, 크리틱 기록, 플래시카드 학습</p>
+
+    <section class="my-projects" id="hubProjects" hidden aria-label="내 프로젝트">
+      <div class="mp-head">
+        <div>
+          <h2>내 프로젝트</h2>
+          <span class="mp-user" id="mpUser"></span>
+        </div>
+        <button type="button" class="mp-btn ghost" id="mpSignOut">로그아웃</button>
+      </div>
+      <form class="mp-form" id="mpForm">
+        <input type="text" id="mpName" maxlength="80" placeholder="새 프로젝트 이름 (예: Butte-Rouge F1)" required>
+        <button type="submit" class="mp-btn">+ 프로젝트 만들기</button>
+      </form>
+      <div class="mp-grid" id="mpGrid"></div>
+      <p class="mp-user" id="mpEmpty" hidden style="margin:8px 0 0">아직 프로젝트가 없습니다. 위에서 첫 프로젝트를 만들어 보세요.</p>
+    </section>
 
     <ul class="tools">
       <li class="tool">
@@ -253,14 +296,38 @@
       <li class="tool">
         <p class="tool-num">06</p>
         <h2>Quiz</h2>
-        <p class="tool-kicker">사진으로 외우는 건축사</p>
-        <p class="tool-desc">강의 슬라이드 사진을 보고 건물 이름·건축가·연도를 맞히는 암기 카드입니다. 직접 덱을 만들 수도 있습니다.</p>
+        <p class="tool-kicker">나만의 플래시카드 · 간격 반복</p>
+        <p class="tool-desc">엑셀·CSV나 텍스트로 암기 덱을 만들고 사진도 붙일 수 있습니다. Google 로그인하면 내 덱이 Drive에 자동 저장됩니다.</p>
         <ul class="tool-list">
-          <li>플래시카드 · 간격 반복 복습</li>
-          <li>4지선다 · 사진 퀴즈 · 실전 3문제</li>
-          <li>헷갈리는 쌍 · 나만의 덱</li>
+          <li>플래시카드 · 4지선다 · 간격 반복</li>
+          <li>엑셀(.xlsx)·CSV 자동 덱 업로드</li>
+          <li>예시 덱 포함 · Drive 자동 동기화</li>
         </ul>
         <a class="go" href="https://atelier-4-2.github.io/quiz/">Quiz 열기 ›</a>
+      </li>
+      <li class="tool">
+        <p class="tool-num">07</p>
+        <h2>Stair</h2>
+        <p class="tool-kicker">계단 · 경사로 계산기</p>
+        <p class="tool-desc">층고를 입력하면 블롱델 공식(2h+g)과 프랑스·한국 법규를 자동 검사하고 1:50·1:100 평면·단면 SVG·DXF를 뽑습니다.</p>
+        <ul class="tool-list">
+          <li>2h+g 최적 단수 자동 계산</li>
+          <li>프랑스 주거·ERP / 한국 기준 체크</li>
+          <li>1:50 · 1:100 SVG · DXF 바로 저장</li>
+        </ul>
+        <a class="go" href="https://atelier-4-2.github.io/site/stair.html">Stair 열기 ›</a>
+      </li>
+      <li class="tool">
+        <p class="tool-num">08</p>
+        <h2>Trait</h2>
+        <p class="tool-kicker">벡터 PDF → DXF 변환</p>
+        <p class="tool-desc">벡터 PDF 도면을 브라우저에서 바로 DXF로 바꿉니다. 선 굵기·색별로 레이어가 자동 정리되어 Rhino로 바로 가져옵니다.</p>
+        <ul class="tool-list">
+          <li>100% 브라우저 로컬 변환 (업로드 없음)</li>
+          <li>선 굵기·색별 자동 레이어 분리</li>
+          <li>축척 지정 · DXF 즉시 다운로드</li>
+        </ul>
+        <a class="go" href="https://atelier-4-2.github.io/site/trait.html">Trait 열기 ›</a>
       </li>
     </ul>
   </main>
@@ -268,5 +335,65 @@
   <footer>
     <b>Atelier 4·2</b> · 설치 없이 브라우저에서 바로 쓰는 도구
   </footer>
+  <script type="module">
+    const CLIENT_ID = "333501036096-o6m50cvb01b4t49kcedi4jq4a7kv42i3.apps.googleusercontent.com";
+    const btn = document.getElementById("hubDriveBtn");
+    const sec = document.getElementById("hubProjects");
+    const grid = document.getElementById("mpGrid");
+    const empty = document.getElementById("mpEmpty");
+    const userEl = document.getElementById("mpUser");
+    let cloud = null;
+
+    async function ensureCloud() {
+      if (cloud) return cloud;
+      const m = await import("./atelier-cloud.js");
+      cloud = m.createCloud({ googleClientId: CLIENT_ID, rootFolderName: "Atelier 4·2 Share" });
+      return cloud;
+    }
+    async function renderProjects() {
+      const s = cloud && cloud.signedIn ? (cloud.user || {}) : null;
+      btn.classList.toggle("on", !!s);
+      btn.textContent = s ? "내 프로젝트 ●" : "Drive 로그인";
+      sec.hidden = !s;
+      if (!s) return;
+      userEl.textContent = (s.emailAddress || s.displayName || "Google Drive") + " 연결됨";
+      grid.textContent = "";
+      try {
+        const list = await cloud.listProjects();
+        empty.hidden = list.length > 0;
+        for (const p of list) {
+          const card = document.createElement("div"); card.className = "mp-card";
+          const b = document.createElement("b"); b.textContent = p.name; card.append(b);
+          const links = document.createElement("div"); links.className = "mp-links";
+          const q = "?project=" + encodeURIComponent(p.id);
+          for (const [label, href] of [
+            ["Board", "https://atelier-4-2.github.io/site/" + q + "#board"],
+            ["View", "https://atelier-4-2.github.io/view/" + q],
+            ["Crit", "https://atelier-4-2.github.io/crit/" + q],
+            ["Share", "https://atelier-4-2.github.io/share/" + q],
+          ]) {
+            const a = document.createElement("a"); a.href = href; a.textContent = label; links.append(a);
+          }
+          card.append(links);
+          grid.append(card);
+        }
+      } catch (e) { userEl.textContent = "프로젝트 목록을 불러오지 못했습니다."; }
+    }
+    btn.addEventListener("click", async () => {
+      const c = await ensureCloud();
+      if (c.signedIn) { sec.scrollIntoView({ behavior: "smooth" }); return; }
+      try { await c.signIn("google"); await renderProjects(); } catch (e) { /* cancelled */ }
+    });
+    document.getElementById("mpSignOut").addEventListener("click", async () => {
+      if (cloud) { await cloud.signOut(); renderProjects(); }
+    });
+    document.getElementById("mpForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const inp = document.getElementById("mpName");
+      const name = inp.value.trim(); if (!name || !cloud) return;
+      try { await cloud.createProject(name); inp.value = ""; await renderProjects(); } catch (err) { alert("프로젝트를 만들지 못했습니다."); }
+    });
+    ensureCloud().then(c => c.restore()).then(ok => { if (ok) renderProjects(); }).catch(() => {});
+  </script>
 </body>
 </html>
