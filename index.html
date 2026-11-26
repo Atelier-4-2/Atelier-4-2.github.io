@@ -3,18 +3,44 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <title>Atelier 4·2</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Atelier 4·2">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Atelier 4·2 — 건축 학생을 위한 작은 도구들</title>
   <meta name="description" content="Atelier 4·2 — 대지 다이어그램·레이저 모형(Terrain), 패널 배치(Board), Rhino 뷰어·단면 투시(View), 크리틱 녹음(Crit), 프로젝트 자료 공유(Share), 건축사 암기 퀴즈(Quiz).">
+  <link rel="canonical" href="https://atelier-4-2.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Atelier 4·2">
+  <meta property="og:title" content="Atelier 4·2 — 건축 학생을 위한 작은 도구들">
+  <meta property="og:description" content="설치 없이 브라우저에서 바로 쓰는 건축 도구: Terrain · Board · View · Crit · Share · Quiz">
+  <meta property="og:url" content="https://atelier-4-2.github.io/">
+  <meta property="og:image" content="https://atelier-4-2.github.io/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:locale:alternate" content="fr_FR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Atelier 4·2 — 건축 학생을 위한 작은 도구들">
+  <meta name="twitter:description" content="설치 없이 브라우저에서 바로 쓰는 건축 도구: Terrain · Board · View · Crit · Share · Quiz">
+  <meta name="twitter:image" content="https://atelier-4-2.github.io/og-image.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('atelier-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
   <style>
-    /* Instrument Sans 600 (SIL OFL), self-hosted, logo only */
+    /* Instrument Sans 600 (SIL OFL), self-hosted, logo & headings */
     @font-face {
       font-family: "Instrument Sans"; font-style: normal; font-weight: 600; font-display: swap;
       src: url(./fonts/instrument-sans-latin-ext-600-normal.woff2) format("woff2");
@@ -36,6 +62,9 @@
       --paper: #ffffff;
       --background: #ffffff;
       --nav: rgb(255 255 255 / 86%);
+      --badge-bg: #f5f5f7;
+      --btn-bg: #1d1d1f;
+      --btn-ink: #ffffff;
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
@@ -48,15 +77,20 @@
         --paper: #111113;
         --background: #000000;
         --nav: rgb(0 0 0 / 86%);
+        --badge-bg: #1d1d1f;
+        --btn-bg: #f5f5f7;
+        --btn-ink: #111113;
       }
     }
     :root[data-theme="dark"] {
       color-scheme: dark;
       --ink: #f5f5f7; --muted: #a1a1a6; --line: #38383a; --divider: #48484a;
       --surface: #1d1d1f; --paper: #111113; --background: #000000; --nav: rgb(0 0 0 / 86%);
+      --badge-bg: #1d1d1f; --btn-bg: #f5f5f7; --btn-ink: #111113;
     }
 
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
     html, body {
       margin: 0;
       background: var(--background);
@@ -66,71 +100,494 @@
       -webkit-font-smoothing: antialiased;
     }
     a { color: inherit; }
+    button { font: inherit; color: inherit; }
 
+    /* Header */
     .page-header {
-      position: sticky; top: 0; z-index: 10;
+      position: sticky; top: 0; z-index: 20;
       background: var(--nav);
       backdrop-filter: saturate(180%) blur(16px);
       -webkit-backdrop-filter: saturate(180%) blur(16px);
       border-bottom: 1px solid var(--divider);
     }
     .nav-inner {
-      max-width: 1160px; margin: 0 auto; padding: 4px 20px;
+      max-width: 1160px; margin: 0 auto; padding: 6px 20px;
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
     .brand {
-      flex: none;
-      display: inline-flex; align-items: center; min-height: 44px; padding: 12px 10px 12px 0;
+      flex-shrink: 0;
+      display: inline-flex; align-items: center; min-height: 40px; padding: 8px 6px 8px 0;
       font-family: "Instrument Sans", sans-serif; font-weight: 600; font-size: 20px;
       letter-spacing: .02em; line-height: 1; text-decoration: none;
     }
     .site-switch {
-      display: inline-flex; gap: 2px; padding: 3px; border-radius: 980px; background: var(--surface);
-      min-width: 0; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      display: inline-flex; align-items: center; gap: 2px; padding: 3px;
+      border-radius: 980px; background: var(--surface);
+      overflow-x: auto; scrollbar-width: none; max-width: 100%;
     }
     .site-switch::-webkit-scrollbar { display: none; }
     .site-switch a {
-      flex: none; white-space: nowrap;
+      flex-shrink: 0; white-space: nowrap;
       padding: 6px 12px; border-radius: 980px; font-size: 13px; font-weight: 600;
-      color: var(--muted); text-decoration: none;
+      color: var(--muted); text-decoration: none; transition: color 120ms ease, background 120ms ease;
     }
-    .site-switch a:hover { color: var(--ink); }
+    .site-switch a:hover { color: var(--ink); background: var(--paper); }
 
+    .nav-controls {
+      flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .lang {
+      display: inline-flex; gap: 2px; padding: 3px; border-radius: 980px; background: var(--surface);
+    }
+    .lang button {
+      border: 0; background: transparent; cursor: pointer;
+      padding: 5px 9px; border-radius: 980px; font-size: 12px; font-weight: 700;
+      color: var(--muted); line-height: 1;
+    }
+    .lang button[aria-pressed="true"] {
+      background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+    }
+    .icon-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 980px;
+      background: var(--paper); color: var(--muted); cursor: pointer;
+      transition: color 120ms ease, border-color 120ms ease;
+    }
+    .icon-btn:hover { color: var(--ink); border-color: var(--ink); }
+    .icon-btn svg { width: 15px; height: 15px; display: block; pointer-events: none; }
+
+    /* Main */
     main {
       width: min(1160px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 96px 0 48px;
+      padding: 72px 0 48px;
       text-align: center;
       word-break: keep-all;
     }
     .eyebrow {
-      margin: 0 0 16px;
+      margin: 0 0 14px;
       font-family: "Instrument Sans", sans-serif; font-weight: 600; font-size: 13px;
       letter-spacing: .02em; color: var(--muted);
     }
     h1 {
-      margin: 0 0 20px;
-      font-size: clamp(40px, 5vw, 56px); line-height: 1.16; letter-spacing: -.03em; font-weight: 700;
+      margin: 0 0 18px;
+      font-size: clamp(38px, 5vw, 56px); line-height: 1.15; letter-spacing: -.03em; font-weight: 700;
       text-wrap: balance;
     }
     .subhead {
-      max-width: 640px; margin: 0 auto;
-      color: var(--muted); font-size: clamp(18px, 2vw, 22px); line-height: 1.55; letter-spacing: -.015em;
+      max-width: 660px; margin: 0 auto;
+      color: var(--muted); font-size: clamp(17px, 2vw, 21px); line-height: 1.55; letter-spacing: -.015em;
       text-wrap: balance;
     }
 
+    /* Recent resume banner */
+    .recent-bar {
+      display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+      margin: 24px auto 0; padding: 8px 14px;
+      border: 1px solid var(--line); border-radius: 980px; background: var(--surface);
+      font-size: 13px; color: var(--muted);
+    }
+    .recent-bar[hidden] { display: none; }
+    .recent-bar a {
+      font-weight: 700; color: var(--ink); text-decoration: none;
+    }
+    .recent-bar a:hover { text-decoration: underline; }
+    .recent-close {
+      border: 0; background: transparent; color: var(--muted); cursor: pointer;
+      padding: 0 4px; font-size: 14px; line-height: 1;
+    }
+    .recent-close:hover { color: var(--ink); }
+
+    /* Workflow strip */
+    .workflow {
+      max-width: 1080px; margin: 36px auto 0;
+      padding: 12px 16px; border: 1px solid var(--line); border-radius: 14px;
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
+      font-size: 13px; color: var(--muted);
+    }
+    .workflow-label {
+      font-weight: 700; color: var(--ink); margin-right: 6px;
+    }
+    .wf-step {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 980px; background: var(--paper);
+      border: 1px solid var(--line); text-decoration: none; color: var(--ink); font-weight: 600;
+      transition: border-color 120ms ease;
+    }
+    .wf-step:hover { border-color: var(--ink); }
+    .wf-step span { color: var(--muted); font-weight: 500; }
+    .wf-arrow { color: var(--divider); font-weight: 700; user-select: none; }
+
+    /* My Projects section */
+    .projects-wrap {
+      max-width: 1080px; margin: 28px auto 0; text-align: left;
+      border: 1px solid var(--line); border-radius: 18px; background: var(--paper);
+      padding: 18px 22px;
+    }
+    .projects-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .projects-title-group { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .projects-title {
+      margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -.01em;
+    }
+    .projects-sub {
+      margin: 0; font-size: 13px; color: var(--muted);
+    }
+    .projects-actions { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 7px 14px; border-radius: 980px; border: 1px solid var(--line);
+      background: var(--paper); color: var(--ink); font-size: 13px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: border-color 120ms ease, opacity 120ms ease;
+    }
+    .btn:hover { border-color: var(--ink); }
+    .btn.primary {
+      background: var(--btn-bg); color: var(--btn-ink); border-color: var(--btn-bg);
+    }
+    .btn.primary:hover { opacity: .88; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .projects-status {
+      margin: 12px 0 0; font-size: 13px; color: var(--muted);
+    }
+    .projects-status[hidden] { display: none; }
+    .projects-create {
+      display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;
+    }
+    .projects-create[hidden] { display: none; }
+    .projects-create input {
+      flex: 1; min-width: 200px; padding: 8px 12px; border-radius: 10px;
+      border: 1px solid var(--divider); background: var(--background); color: var(--ink);
+      font: inherit; font-size: 14px;
+    }
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+      margin: 16px 0 0; padding: 0; list-style: none;
+    }
+    .projects-grid[hidden] { display: none; }
+    .proj-card {
+      padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px;
+      background: var(--surface); display: flex; flex-direction: column; gap: 8px;
+    }
+    .proj-name {
+      margin: 0; font-size: 15px; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .proj-meta { margin: 0; font-size: 12px; color: var(--muted); }
+    .proj-counts {
+      display: flex; flex-wrap: wrap; gap: 5px; margin: 2px 0 0;
+    }
+    .proj-counts:empty { display: none; }
+    .proj-count-pill {
+      padding: 2px 7px; border-radius: 6px; background: var(--paper);
+      border: 1px solid var(--line); font-size: 11px; font-weight: 600; color: var(--muted);
+    }
+    .proj-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .proj-links a, .proj-links button {
+      padding: 4px 9px; border-radius: 980px; border: 1px solid var(--line);
+      background: var(--paper); font-size: 12px; font-weight: 600; text-decoration: none;
+      cursor: pointer;
+    }
+    .proj-links a:hover, .proj-links button:hover { border-color: var(--ink); }
+    .tool-badge.due {
+      background: var(--btn-bg); color: var(--btn-ink);
+    }
+
+    /* Modals (Scale Calculator & Changelog) */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgb(0 0 0 / 48%);
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal {
+      width: min(560px, 100%); max-height: 88vh; overflow-y: auto;
+      background: var(--paper); color: var(--ink);
+      border: 1px solid var(--line); border-radius: 20px;
+      padding: 24px; text-align: left;
+      box-shadow: 0 20px 60px rgb(0 0 0 / 22%);
+    }
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .modal-head h2 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -.015em; }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 980px; border: 1px solid var(--line);
+      background: var(--surface); color: var(--ink); cursor: pointer;
+      font-size: 18px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .modal-close:hover { border-color: var(--ink); }
+    .calc-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;
+    }
+    .calc-field { display: flex; flex-direction: column; gap: 5px; }
+    .calc-field label { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .calc-input-wrap { display: flex; gap: 6px; }
+    .calc-input-wrap input, .calc-input-wrap select {
+      padding: 9px 10px; border-radius: 10px; border: 1px solid var(--divider);
+      background: var(--background); color: var(--ink); font: inherit; font-size: 15px; font-weight: 600;
+    }
+    .calc-input-wrap input { width: 100%; min-width: 0; }
+    .scale-pills {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; align-items: center;
+    }
+    .scale-pill {
+      padding: 5px 11px; border-radius: 980px; border: 1px solid var(--line);
+      background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .scale-pill[aria-pressed="true"] {
+      background: var(--btn-bg); color: var(--btn-ink); border-color: var(--btn-bg);
+    }
+    .scale-custom {
+      width: 78px; padding: 5px 8px; border-radius: 980px; border: 1px solid var(--divider);
+      background: var(--background); color: var(--ink); font-size: 13px; font-weight: 600; text-align: center;
+    }
+    .calc-table {
+      width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px;
+    }
+    .calc-table th, .calc-table td {
+      padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left;
+    }
+    .calc-table th { color: var(--muted); font-weight: 600; font-size: 12px; }
+    .calc-table td:last-child, .calc-table th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    .calc-section-title {
+      margin: 18px 0 6px; font-size: 13px; font-weight: 700; color: var(--muted);
+    }
+    .changelog-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+    .changelog-item { padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .changelog-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .changelog-date { font-family: "Instrument Sans", sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); }
+    .changelog-item h3 { margin: 2px 0 6px; font-size: 15px; font-weight: 700; }
+    .changelog-item p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.55; }
+    .feedback-bar {
+      margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+      font-size: 13px; color: var(--muted);
+    }
+    .footer-btn {
+      border: 0; background: transparent; padding: 0; cursor: pointer;
+      font: inherit; color: inherit;
+    }
+    .footer-btn:hover { color: var(--ink); text-decoration: underline; }
+
+    /* Cmd+K trigger button */
+    .kbd-btn {
+      display: inline-flex; align-items: center; gap: 5px; height: 32px;
+      padding: 0 10px; border: 1px solid var(--line); border-radius: 980px;
+      background: var(--paper); color: var(--muted); font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: color 120ms ease, border-color 120ms ease;
+    }
+    .kbd-btn:hover { color: var(--ink); border-color: var(--ink); }
+    .kbd-btn kbd {
+      font-family: "Instrument Sans", system-ui, sans-serif; font-size: 11px;
+      padding: 1px 5px; border-radius: 5px; background: var(--surface); border: 1px solid var(--line);
+    }
+
+    /* D-Day & Quick Try strip */
+    .meta-strip {
+      max-width: 1080px; margin: 14px auto 0;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    }
+    .jury-pill {
+      display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding: 7px 14px; border: 1px solid var(--line); border-radius: 980px;
+      background: var(--paper); font-size: 13px; color: var(--ink); cursor: pointer;
+      transition: border-color 120ms ease;
+    }
+    .jury-pill:hover { border-color: var(--ink); }
+    .jury-dday {
+      padding: 2px 8px; border-radius: 980px; background: var(--btn-bg); color: var(--btn-ink);
+      font-family: "Instrument Sans", sans-serif; font-size: 12px; font-weight: 700;
+    }
+    .jury-muted { color: var(--muted); font-size: 12px; }
+    .try-strip {
+      display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      font-size: 12px; color: var(--muted);
+    }
+    .try-strip a {
+      padding: 5px 10px; border-radius: 980px; border: 1px solid var(--line);
+      background: var(--surface); color: var(--ink); text-decoration: none; font-weight: 600;
+      transition: border-color 120ms ease;
+    }
+    .try-strip a:hover { border-color: var(--ink); }
+
+    /* Modal Tabs (Calculator) */
+    .modal-tabs {
+      display: inline-flex; gap: 3px; padding: 3px; border-radius: 980px;
+      background: var(--surface); margin-bottom: 16px;
+    }
+    .modal-tab {
+      border: 0; background: transparent; cursor: pointer;
+      padding: 6px 13px; border-radius: 980px; font-size: 13px; font-weight: 600; color: var(--muted);
+    }
+    .modal-tab[aria-selected="true"] {
+      background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+    }
+
+    /* D-Day Checklist Modal */
+    .jury-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 14px; }
+    .jury-form input {
+      padding: 8px 11px; border-radius: 10px; border: 1px solid var(--divider);
+      background: var(--background); color: var(--ink); font: inherit; font-size: 14px;
+    }
+    .check-add { display: flex; gap: 8px; margin-bottom: 12px; }
+    .check-add input {
+      flex: 1; padding: 8px 11px; border-radius: 10px; border: 1px solid var(--divider);
+      background: var(--background); color: var(--ink); font: inherit; font-size: 14px;
+    }
+    .check-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+    .check-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface);
+      font-size: 14px;
+    }
+    .check-item label { display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1; }
+    .check-item.done span { text-decoration: line-through; color: var(--muted); }
+    .check-del {
+      border: 0; background: transparent; color: var(--muted); cursor: pointer;
+      font-size: 16px; line-height: 1; padding: 2px 6px;
+    }
+    .check-del:hover { color: var(--ink); }
+
+    /* Command Palette (Cmd+K) */
+    .cmd-modal { width: min(520px, 100%); padding: 14px; }
+    .cmd-input {
+      width: 100%; padding: 11px 14px; border-radius: 12px;
+      border: 1px solid var(--divider); background: var(--background); color: var(--ink);
+      font: inherit; font-size: 15px; outline: none;
+    }
+    .cmd-input:focus { border-color: var(--ink); }
+    .cmd-list {
+      list-style: none; padding: 0; margin: 10px 0 0; max-height: 320px; overflow-y: auto;
+      display: grid; gap: 4px;
+    }
+    .cmd-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      width: 100%; padding: 9px 12px; border: 0; border-radius: 10px;
+      background: transparent; color: var(--ink); text-align: left; cursor: pointer;
+      font-size: 14px; font-weight: 600;
+    }
+    .cmd-item:hover, .cmd-item[aria-selected="true"] { background: var(--surface); }
+    .cmd-item small { color: var(--muted); font-weight: 500; font-size: 12px; }
+    .cmd-empty { padding: 18px; text-align: center; font-size: 13px; color: var(--muted); }
+
+    /* Area CES/SDP Calculator */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+      margin: 12px 0;
+    }
+    .kpi-box {
+      padding: 10px 12px; border-radius: 12px; background: var(--surface);
+      border: 1px solid var(--line);
+    }
+    .kpi-box small { display: block; font-size: 11px; color: var(--muted); font-weight: 600; }
+    .kpi-box strong {
+      display: block; margin-top: 2px; font-family: "Instrument Sans", sans-serif;
+      font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .room-add { display: grid; grid-template-columns: 1fr 96px auto; gap: 6px; margin-bottom: 10px; }
+    .room-add input {
+      padding: 8px 10px; border-radius: 10px; border: 1px solid var(--divider);
+      background: var(--background); color: var(--ink); font: inherit; font-size: 14px;
+    }
+
+    /* Glossary Modal */
+    .gloss-list { list-style: none; padding: 0; margin: 12px 0 0; max-height: 360px; overflow-y: auto; display: grid; gap: 8px; }
+    .gloss-item {
+      padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+    }
+    .gloss-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .gloss-fr { font-family: "Instrument Sans", sans-serif; font-weight: 700; font-size: 15px; }
+    .gloss-en { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .gloss-ko { margin: 3px 0 0; font-size: 14px; font-weight: 600; }
+    .gloss-note { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+
+    /* Rehearsal Timer Modal */
+    .timer-display {
+      text-align: center; padding: 18px 12px; border-radius: 16px;
+      background: var(--surface); border: 1px solid var(--line); margin: 12px 0;
+    }
+    .timer-display.warn { border-color: #d97706; }
+    .timer-clock {
+      font-family: "Instrument Sans", sans-serif; font-size: 48px; font-weight: 700;
+      letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.1;
+    }
+    .timer-stage-now { margin-top: 6px; font-size: 14px; font-weight: 700; color: var(--muted); }
+    .timer-stages {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; margin: 12px 0 16px;
+    }
+    .timer-stage {
+      padding: 7px 6px; border-radius: 10px; border: 1px solid var(--line);
+      background: var(--paper); text-align: center; font-size: 11px; color: var(--muted);
+    }
+    .timer-stage strong { display: block; font-size: 12px; color: var(--ink); }
+    .timer-stage.active { background: var(--btn-bg); color: var(--btn-ink); border-color: var(--btn-bg); }
+    .timer-stage.active strong { color: var(--btn-ink); }
+    .timer-controls { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+
+    /* Grouped Studio Kit section on Hub */
+    .kit-section {
+      max-width: 1080px; margin: 36px auto 0; text-align: left;
+    }
+    .kit-section-head {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+      margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .kit-section-head h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.015em; }
+    .kit-section-head span { font-size: 13px; color: var(--muted); }
+    .kit-groups {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px;
+    }
+    .kit-group {
+      padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .kit-group h3 { margin: 0; font-size: 15px; font-weight: 700; }
+    .kit-group p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .kit-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 4px; }
+    .kit-chip {
+      padding: 5px 10px; border-radius: 980px; border: 1px solid var(--line);
+      background: var(--paper); color: var(--ink); font-size: 12px; font-weight: 600;
+      text-decoration: none; cursor: pointer; transition: border-color 120ms ease;
+    }
+    .kit-chip:hover { border-color: var(--ink); }
+
+    @media (max-width: 900px) and (min-width: 641px) {
+      .kit-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .kit-groups { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .calc-row, .jury-form, .kpi-grid { grid-template-columns: 1fr; }
+      .room-add { grid-template-columns: 1fr 80px auto; }
+      .timer-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kbd-btn span { display: none; }
+    }
+
+    /* Tools Grid */
     .tools {
       display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;
-      max-width: 1080px; margin: 48px auto 0; padding: 0; list-style: none; text-align: left;
+      max-width: 1080px; margin: 28px auto 0; padding: 0; list-style: none; text-align: left;
     }
     .tool {
       position: relative; display: flex; flex-direction: column; min-width: 0;
       padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper);
-      transition: border-color 140ms ease;
+      transition: border-color 140ms ease, transform 140ms ease;
     }
-    .tool:hover, .tool:focus-within { border-color: var(--ink); }
+    .tool:hover, .tool:focus-within { border-color: var(--ink); transform: translateY(-1px); }
+    .tool-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
     .tool-num {
       margin: 0; font-family: "Instrument Sans", sans-serif; font-weight: 600; font-size: 13px; color: var(--muted);
+    }
+    .tool-badge {
+      padding: 3px 8px; border-radius: 980px; background: var(--badge-bg);
+      font-size: 11px; font-weight: 600; color: var(--muted);
     }
     .tool h2 {
       margin: 12px 0 2px; font-family: "Instrument Sans", sans-serif; font-size: 28px; font-weight: 600;
@@ -150,250 +607,528 @@
     .tool a.go::after { content: ""; position: absolute; inset: 0; border-radius: 18px; }
     .tool a.go:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
+    /* Footer */
     footer {
-      width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 40px;
-      text-align: center; font-size: 12px; color: var(--muted);
+      width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 44px;
+      border-top: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      font-size: 12px; color: var(--muted);
     }
     footer b { font-family: "Instrument Sans", sans-serif; font-weight: 600; color: var(--ink); }
+    .footer-links { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .footer-links a { text-decoration: none; }
+    .footer-links a:hover { color: var(--ink); text-decoration: underline; }
 
     @media (max-width: 900px) and (min-width: 641px) {
       .tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .projects-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .nav-inner { flex-wrap: wrap; padding: 6px 14px; gap: 8px; }
+      .site-switch { order: 3; width: 100%; justify-content: flex-start; }
     }
     @media (max-width: 640px) {
-      .nav-inner { padding: 4px 16px; }
-      main { padding-top: 48px; }
+      main { padding-top: 40px; }
       .subhead br { display: none; }
-      .tools { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 32px; }
+      .workflow { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+      .workflow::-webkit-scrollbar { display: none; }
+      .workflow-label, .wf-step, .wf-arrow { flex-shrink: 0; }
+      .tools { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 20px; }
+      .projects-grid { grid-template-columns: minmax(0, 1fr); }
       .tool { padding: 22px; }
       .tool h2 { font-size: 24px; }
+      footer { justify-content: center; text-align: center; }
     }
-    .nav-right { display: flex; align-items: center; gap: 8px; min-width: 0; }
-    .hub-drive-btn {
-      flex: none; min-height: 32px; padding: 5px 12px; border-radius: 980px;
-      border: 1px solid var(--divider); background: var(--paper); color: var(--ink);
-      font: 600 12px/1.2 inherit; cursor: pointer; white-space: nowrap;
-    }
-    .hub-drive-btn.on { background: var(--ink); color: var(--background); border-color: var(--ink); }
-    .my-projects {
-      max-width: 1080px; margin: 36px auto 0; padding: 22px; text-align: left;
-      border: 1px solid var(--line); border-radius: 18px; background: var(--paper);
-    }
-    .mp-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
-    .mp-head h2 { margin: 0; font-size: 20px; }
-    .mp-head .mp-user { font-size: 13px; color: var(--muted); }
-    .mp-form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-    .mp-form input { flex: 1 1 200px; min-height: 38px; padding: 0 12px; border: 1px solid var(--divider); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; }
-    .mp-btn { min-height: 38px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--ink); background: var(--ink); color: var(--background); font: 600 13px/1 inherit; cursor: pointer; }
-    .mp-btn.ghost { background: transparent; color: var(--ink); border-color: var(--divider); }
-    .mp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
-    .mp-card { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); display: grid; gap: 10px; }
-    .mp-card b { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .mp-links { display: flex; flex-wrap: wrap; gap: 6px; }
-    .mp-links a { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--divider); background: var(--paper); font-size: 12px; font-weight: 600; text-decoration: none; }
-    .mp-links a:hover { border-color: var(--ink); }
   </style>
 </head>
 <body>
   <header class="page-header">
     <div class="nav-inner">
-      <a class="brand" href="./" aria-label="Atelier 4·2 메인페이지">4·2</a>
-      <div class="nav-right">
-        <nav class="site-switch" aria-label="Atelier 4·2 사이트">
-          <a href="https://atelier-4-2.github.io/site/">Terrain</a>
-          <a href="https://atelier-4-2.github.io/board/">Board</a>
-          <a href="https://atelier-4-2.github.io/view/">View</a>
-          <a href="https://atelier-4-2.github.io/crit/">Crit</a>
-          <a href="https://atelier-4-2.github.io/share/">Share</a>
-          <a href="https://atelier-4-2.github.io/quiz/">Quiz</a>
-        </nav>
-        <button type="button" class="hub-drive-btn" id="hubDriveBtn">Drive 로그인</button>
+      <a class="brand" href="./" aria-label="Atelier 4·2 메인페이지" data-i18n-aria="brandAria">4·2</a>
+      <nav class="site-switch" aria-label="Atelier 4·2 도구" data-i18n-aria="navAria">
+        <a href="https://atelier-4-2.github.io/site/" data-tool="terrain">Terrain</a>
+        <a href="https://atelier-4-2.github.io/board/" data-tool="board">Board</a>
+        <a href="https://atelier-4-2.github.io/view/" data-tool="view">View</a>
+        <a href="https://atelier-4-2.github.io/crit/" data-tool="crit">Crit</a>
+        <a href="https://atelier-4-2.github.io/share/" data-tool="share">Share</a>
+        <a href="https://atelier-4-2.github.io/quiz/" data-tool="quiz">Quiz</a>
+      </nav>
+      <div class="nav-controls">
+        <button type="button" class="btn" id="btnInstallPwa" hidden data-i18n="btnInstall">앱 설치</button>
+        <button type="button" class="kbd-btn" id="cmdBtn" aria-label="빠른 실행 (Ctrl+K)" title="빠른 실행 (⌘K / Ctrl+K)">
+          <span data-i18n="cmdBtnLabel">검색</span><kbd>⌘K</kbd>
+        </button>
+        <div class="lang" role="group" aria-label="언어 / Langue">
+          <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+          <button type="button" data-lang="ko" aria-pressed="true">KO</button>
+        </div>
+        <button type="button" class="icon-btn" id="calcBtn" aria-label="축척 계산기" title="축척 계산기" data-i18n-aria="calcTitle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"/>
+            <path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/>
+          </svg>
+        </button>
+        <button type="button" class="icon-btn" id="themeBtn" aria-label="테마 전환" title="테마 전환">
+          <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
       </div>
     </div>
   </header>
 
   <main>
     <p class="eyebrow">Atelier 4·2</p>
-    <h1>건축 학생을 위한<br>작은 도구들</h1>
-    <p class="subhead">대지를 읽고 모형을 만드는 도구, 패널을 짜는 보드, 프로젝트 자료 공유, <br>Rhino 모델 보기, 크리틱 기록, 플래시카드 학습</p>
+    <h1 data-i18n-html="heroTitle">건축 학생을 위한<br>작은 도구들</h1>
+    <p class="subhead" data-i18n-html="heroSub">대지를 읽고 모형을 만드는 도구, 패널을 짜는 보드, 프로젝트 자료 공유, <br>Rhino 모델 보기, 크리틱 기록, 건축사 암기 카드</p>
 
-    <section class="my-projects" id="hubProjects" hidden aria-label="내 프로젝트">
-      <div class="mp-head">
-        <div>
-          <h2>내 프로젝트</h2>
-          <span class="mp-user" id="mpUser"></span>
-        </div>
-        <button type="button" class="mp-btn ghost" id="mpSignOut">로그아웃</button>
+    <div class="recent-bar" id="recentBar" hidden>
+      <span id="recentLabel">최근 사용:</span>
+      <a id="recentLink" href="#"></a>
+      <button type="button" class="recent-close" id="recentClose" aria-label="닫기">×</button>
+    </div>
+
+    <div class="workflow" aria-label="작업 흐름" data-i18n-aria="workflowAria">
+      <span class="workflow-label" data-i18n="wfLabel">작업 흐름</span>
+      <a class="wf-step" href="https://atelier-4-2.github.io/site/" data-tool="terrain">Terrain <span data-i18n="wfTerrain">대지 분석</span></a>
+      <span class="wf-arrow" aria-hidden="true">→</span>
+      <a class="wf-step" href="https://atelier-4-2.github.io/view/" data-tool="view">View <span data-i18n="wfView">3D 검토</span></a>
+      <span class="wf-arrow" aria-hidden="true">→</span>
+      <a class="wf-step" href="https://atelier-4-2.github.io/crit/" data-tool="crit">Crit <span data-i18n="wfCrit">크리틱</span></a>
+      <span class="wf-arrow" aria-hidden="true">→</span>
+      <a class="wf-step" href="https://atelier-4-2.github.io/board/" data-tool="board">Board <span data-i18n="wfBoard">패널 배치</span></a>
+      <span class="wf-arrow" aria-hidden="true">→</span>
+      <a class="wf-step" href="https://atelier-4-2.github.io/share/" data-tool="share">Share <span data-i18n="wfShare">자료 공유</span></a>
+    </div>
+
+    <div class="meta-strip">
+      <button type="button" class="jury-pill" id="juryBtn">
+        <span class="jury-dday" id="juryDdayBadge">D-Day</span>
+        <span id="jurySummaryText" data-i18n="juryUnset">마감 · 주리 D-Day 설정</span>
+      </button>
+      <div class="try-strip" aria-label="빠른 체험" data-i18n-aria="tryAria">
+        <span data-i18n="tryLabel">파일 없이 바로 체험:</span>
+        <a href="https://atelier-4-2.github.io/quiz/" data-tool="quiz" data-i18n="tryQuiz">건축사 퀴즈</a>
+        <a href="https://atelier-4-2.github.io/site/" data-tool="terrain" data-i18n="tryTerrain">대지 분석</a>
+        <a href="./brief.html" data-i18n="tryBrief">프로젝트 브리프 카드</a>
       </div>
-      <form class="mp-form" id="mpForm">
-        <input type="text" id="mpName" maxlength="80" placeholder="새 프로젝트 이름 (예: Butte-Rouge F1)" required>
-        <button type="submit" class="mp-btn">+ 프로젝트 만들기</button>
+    </div>
+
+    <section class="projects-wrap" id="projectsSection" aria-labelledby="projectsHeading">
+      <div class="projects-head">
+        <div class="projects-title-group">
+          <h2 class="projects-title" id="projectsHeading" data-i18n="projTitle">내 프로젝트</h2>
+          <p class="projects-sub" id="projectsSub" data-i18n="projSubLoggedOut">Google Drive에 로그인하면 프로젝트 폴더를 여기서 바로 열 수 있습니다. 로그인 없이도 모든 도구를 쓸 수 있습니다.</p>
+        </div>
+        <div class="projects-actions">
+          <button type="button" class="btn primary" id="btnSignIn" data-i18n="btnSignIn">Google 로그인</button>
+          <button type="button" class="btn" id="btnNewProj" hidden data-i18n="btnNewProj">+ 새 프로젝트</button>
+          <button type="button" class="btn" id="btnSignOut" hidden data-i18n="btnSignOut">로그아웃</button>
+        </div>
+      </div>
+      <form class="projects-create" id="projCreateForm" hidden>
+        <input type="text" id="projNameInput" maxlength="60" placeholder="프로젝트 이름 (예: Romainville_S6)" data-i18n-ph="projNamePh" required>
+        <button type="submit" class="btn primary" data-i18n="btnCreate">만들기</button>
+        <button type="button" class="btn" id="btnCancelCreate" data-i18n="btnCancel">취소</button>
       </form>
-      <div class="mp-grid" id="mpGrid"></div>
-      <p class="mp-user" id="mpEmpty" hidden style="margin:8px 0 0">아직 프로젝트가 없습니다. 위에서 첫 프로젝트를 만들어 보세요.</p>
+      <p class="projects-status" id="projectsStatus" hidden></p>
+      <ul class="projects-grid" id="projectsGrid" hidden></ul>
     </section>
 
     <ul class="tools">
       <li class="tool">
-        <p class="tool-num">01</p>
+        <div class="tool-top">
+          <p class="tool-num">01</p>
+          <span class="tool-badge" data-i18n="badgeTerrain">Board 연동</span>
+        </div>
         <h2>Terrain</h2>
-        <p class="tool-kicker">대지 다이어그램 · 레이저 모형</p>
-        <p class="tool-desc">주소 하나로 IGN·지적·PLU 데이터를 모아 대지 다이어그램과 지형·건물 모형 도면을 만듭니다.</p>
+        <p class="tool-kicker" data-i18n="t1Kicker">대지 다이어그램 · 레이저 모형</p>
+        <p class="tool-desc" data-i18n="t1Desc">주소 하나로 IGN·지적·PLU 데이터를 모아 대지 다이어그램과 지형·건물 모형 도면을 만듭니다.</p>
         <ul class="tool-list">
-          <li>대지 다이어그램 · 3D 매스</li>
-          <li>지형 등고선 · 건물 레이저 도면</li>
-          <li>PDF · SVG · DXF · STL · 3DM</li>
+          <li data-i18n="t1L1">대지 다이어그램 · 3D 매스</li>
+          <li data-i18n="t1L2">지형 등고선 · 건물 레이저 도면</li>
+          <li data-i18n="t1L3">PDF · SVG · DXF · STL · 3DM</li>
         </ul>
-        <a class="go" href="https://atelier-4-2.github.io/site/">Terrain 열기 ›</a>
+        <a class="go" href="https://atelier-4-2.github.io/site/" data-tool="terrain" data-i18n="t1Go">Terrain 열기 ›</a>
       </li>
       <li class="tool">
-        <p class="tool-num">02</p>
+        <div class="tool-top">
+          <p class="tool-num">02</p>
+          <span class="tool-badge" data-i18n="badgeBoard">Terrain 수신</span>
+        </div>
         <h2>Board</h2>
-        <p class="tool-kicker">패널 배치 · 핀업</p>
-        <p class="tool-desc">다이어그램·사진·글을 모아 A3·A1 패널로 배치하고 출력합니다. Terrain에서 만든 다이어그램을 바로 보낼 수 있습니다.</p>
+        <p class="tool-kicker" data-i18n="t2Kicker">패널 배치 · 핀업</p>
+        <p class="tool-desc" data-i18n="t2Desc">다이어그램·사진·글을 모아 A3·A1·A0 패널로 배치하고 출력합니다. Terrain에서 만든 다이어그램을 바로 보낼 수 있습니다.</p>
         <ul class="tool-list">
-          <li>자유 캔버스 · 메모 · 화살표</li>
-          <li>A3 · A1 프레임 · 격자 정렬</li>
-          <li>PDF · PNG · .atelier 저장</li>
+          <li data-i18n="t2L1">자유 캔버스 · 메모 · 화살표</li>
+          <li data-i18n="t2L2">A3 · A1 · A0 프레임 · 격자 정렬</li>
+          <li data-i18n="t2L3">PDF · PNG · .atelier 저장</li>
         </ul>
-        <a class="go" href="https://atelier-4-2.github.io/board/">Board 열기 ›</a>
+        <a class="go" href="https://atelier-4-2.github.io/board/" data-tool="board" data-i18n="t2Go">Board 열기 ›</a>
       </li>
       <li class="tool">
-        <p class="tool-num">03</p>
+        <div class="tool-top">
+          <p class="tool-num">03</p>
+          <span class="tool-badge" data-i18n="badgeCloud">클라우드 지원</span>
+        </div>
         <h2>View</h2>
-        <p class="tool-kicker">Rhino 모델 보기 · 단면 투시</p>
-        <p class="tool-desc">Rhino 파일(.3dm)을 끌어다 놓으면 브라우저에서 바로 3D로 열립니다. 단면을 잘라 선으로 그린 단면 투시도를 뽑습니다.</p>
+        <p class="tool-kicker" data-i18n="t3Kicker">Rhino 모델 보기 · 단면 투시</p>
+        <p class="tool-desc" data-i18n="t3Desc">Rhino 파일(.3dm)을 끌어다 놓으면 브라우저에서 바로 3D로 열립니다. 단면을 잘라 선으로 그린 단면 투시도를 뽑습니다.</p>
         <ul class="tool-list">
-          <li>레이어 · 단면 · 측정</li>
-          <li>단면 투시 · 햇빛 · 분해</li>
-          <li>PNG · AI 렌더용 캡처</li>
+          <li data-i18n="t3L1">레이어 · 단면 · 측정</li>
+          <li data-i18n="t3L2">단면 투시 · 햇빛 · 분해</li>
+          <li data-i18n="t3L3">PNG · AI 렌더용 캡처</li>
         </ul>
-        <a class="go" href="https://atelier-4-2.github.io/view/">View 열기 ›</a>
+        <a class="go" href="https://atelier-4-2.github.io/view/" data-tool="view" data-i18n="t3Go">View 열기 ›</a>
       </li>
       <li class="tool">
-        <p class="tool-num">04</p>
+        <div class="tool-top">
+          <p class="tool-num">04</p>
+          <span class="tool-badge" data-i18n="badgeCloud">클라우드 지원</span>
+        </div>
         <h2>Crit</h2>
-        <p class="tool-kicker">크리틱 녹음 · 도면 핀</p>
-        <p class="tool-desc">크리틱을 녹음하면서 도면을 누르면 그 순간이 핀으로 남습니다. 핀을 누르면 그 말부터 다시 듣습니다.</p>
+        <p class="tool-kicker" data-i18n="t4Kicker">크리틱 녹음 · 도면 핀</p>
+        <p class="tool-desc" data-i18n="t4Desc">크리틱을 녹음하면서 도면을 누르면 그 순간이 핀으로 남습니다. 핀을 누르면 그 말부터 다시 듣습니다.</p>
         <ul class="tool-list">
-          <li>녹음 · 발표 타이머</li>
-          <li>도면 핀 · 메모 · 별표</li>
-          <li>요약 PDF · .crit 저장</li>
+          <li data-i18n="t4L1">녹음 · 발표 타이머</li>
+          <li data-i18n="t4L2">도면 핀 · 메모 · 별표</li>
+          <li data-i18n="t4L3">요약 PDF · .crit 저장</li>
         </ul>
-        <a class="go" href="https://atelier-4-2.github.io/crit/">Crit 열기 ›</a>
+        <a class="go" href="https://atelier-4-2.github.io/crit/" data-tool="crit" data-i18n="t4Go">Crit 열기 ›</a>
       </li>
       <li class="tool">
-        <p class="tool-num">05</p>
+        <div class="tool-top">
+          <p class="tool-num">05</p>
+          <span class="tool-badge" data-i18n="badgeCloud">클라우드 지원</span>
+        </div>
         <h2>Share</h2>
-        <p class="tool-kicker">프로젝트 자료 공유 · 대용량</p>
-        <p class="tool-desc">내 Google Drive에 프로젝트 자료를 폴더째 올리고, 받는 사람은 로그인 없이 링크로 바로 받습니다. 몇 GB 파일도 끊기면 이어서 올립니다.</p>
+        <p class="tool-kicker" data-i18n="t5Kicker">프로젝트 자료 공유 · 대용량</p>
+        <p class="tool-desc" data-i18n="t5Desc">내 클라우드(Google Drive 등)에 프로젝트 자료를 폴더째 올리고, 받는 사람은 로그인 없이 링크로 바로 받습니다. 대용량 파일도 끊기면 이어서 올립니다.</p>
         <ul class="tool-list">
-          <li>폴더째 올리기 · 끊겨도 이어 올리기</li>
-          <li>링크 · QR · 이메일로 바로 공유</li>
-          <li>자료는 내 Drive에만 안전하게 저장</li>
+          <li data-i18n="t5L1">폴더째 올리기 · 끊겨도 이어 올리기</li>
+          <li data-i18n="t5L2">링크 · QR · 이메일로 바로 공유</li>
+          <li data-i18n="t5L3">자료는 내 클라우드에만 안전하게 저장</li>
         </ul>
-        <a class="go" href="https://atelier-4-2.github.io/share/">Share 열기 ›</a>
+        <a class="go" href="https://atelier-4-2.github.io/share/" data-tool="share" data-i18n="t5Go">Share 열기 ›</a>
       </li>
       <li class="tool">
-        <p class="tool-num">06</p>
+        <div class="tool-top">
+          <p class="tool-num">06</p>
+          <span class="tool-badge" id="quizBadge" data-i18n="badgeOffline">오프라인 학습</span>
+        </div>
         <h2>Quiz</h2>
-        <p class="tool-kicker">나만의 플래시카드 · 간격 반복</p>
-        <p class="tool-desc">엑셀·CSV나 텍스트로 암기 덱을 만들고 사진도 붙일 수 있습니다. Google 로그인하면 내 덱이 Drive에 자동 저장됩니다.</p>
+        <p class="tool-kicker" data-i18n="t6Kicker">나만의 플래시카드 · 간격 반복</p>
+        <p class="tool-desc" data-i18n="t6Desc">엑셀·CSV나 텍스트로 암기 덱을 만들고 사진도 붙일 수 있습니다. Google 로그인하면 내 덱이 Drive에 자동 저장됩니다.</p>
         <ul class="tool-list">
-          <li>플래시카드 · 4지선다 · 간격 반복</li>
-          <li>엑셀(.xlsx)·CSV 자동 덱 업로드</li>
-          <li>예시 덱 포함 · Drive 자동 동기화</li>
+          <li data-i18n="t6L1">플래시카드 · 4지선다 · 간격 반복</li>
+          <li data-i18n="t6L2">엑셀(.xlsx)·CSV 자동 덱 업로드</li>
+          <li data-i18n="t6L3">예시 덱 포함 · Drive 자동 동기화</li>
         </ul>
-        <a class="go" href="https://atelier-4-2.github.io/quiz/">Quiz 열기 ›</a>
+        <a class="go" href="https://atelier-4-2.github.io/quiz/" data-tool="quiz" data-i18n="t6Go">Quiz 열기 ›</a>
       </li>
       <li class="tool">
-        <p class="tool-num">07</p>
+        <div class="tool-top">
+          <p class="tool-num">07</p>
+          <span class="tool-badge" data-i18n="badgeSvgDxf">SVG · DXF</span>
+        </div>
         <h2>Stair</h2>
-        <p class="tool-kicker">계단 · 경사로 계산기</p>
-        <p class="tool-desc">층고를 입력하면 블롱델 공식(2h+g)과 프랑스·한국 법규를 자동 검사하고 1:50·1:100 평면·단면 SVG·DXF를 뽑습니다.</p>
+        <p class="tool-kicker" data-i18n="t7Kicker">계단 · 경사로 계산기</p>
+        <p class="tool-desc" data-i18n="t7Desc">층고를 입력하면 블롱델 공식(2h+g)과 프랑스·한국 법규를 자동 검사하고 1:50·1:100 평면·단면 SVG·DXF를 뽑습니다.</p>
         <ul class="tool-list">
-          <li>2h+g 최적 단수 자동 계산</li>
-          <li>프랑스 주거·ERP / 한국 기준 체크</li>
-          <li>1:50 · 1:100 SVG · DXF 바로 저장</li>
+          <li data-i18n="t7L1">2h+g 최적 단수 자동 계산</li>
+          <li data-i18n="t7L2">프랑스 주거·ERP / 한국 기준 체크</li>
+          <li data-i18n="t7L3">1:50 · 1:100 SVG · DXF 바로 저장</li>
         </ul>
-        <a class="go" href="https://atelier-4-2.github.io/site/stair.html">Stair 열기 ›</a>
+        <a class="go" href="https://atelier-4-2.github.io/site/stair.html" data-tool="stair" data-i18n="t7Go">Stair 열기 ›</a>
       </li>
       <li class="tool">
-        <p class="tool-num">08</p>
+        <div class="tool-top">
+          <p class="tool-num">08</p>
+          <span class="tool-badge" data-i18n="badgeLocal">100% 로컬</span>
+        </div>
         <h2>Trait</h2>
-        <p class="tool-kicker">벡터 PDF → DXF 변환</p>
-        <p class="tool-desc">벡터 PDF 도면을 브라우저에서 바로 DXF로 바꿉니다. 선 굵기·색별로 레이어가 자동 정리되어 Rhino로 바로 가져옵니다.</p>
+        <p class="tool-kicker" data-i18n="t8Kicker">벡터 PDF → DXF 변환</p>
+        <p class="tool-desc" data-i18n="t8Desc">벡터 PDF 도면을 브라우저에서 바로 DXF로 바꿉니다. 선 굵기·색별로 레이어가 자동 정리되어 Rhino로 바로 가져옵니다.</p>
         <ul class="tool-list">
-          <li>100% 브라우저 로컬 변환 (업로드 없음)</li>
-          <li>선 굵기·색별 자동 레이어 분리</li>
-          <li>축척 지정 · DXF 즉시 다운로드</li>
+          <li data-i18n="t8L1">100% 브라우저 로컬 변환 (업로드 없음)</li>
+          <li data-i18n="t8L2">선 굵기·색별 자동 레이어 분리</li>
+          <li data-i18n="t8L3">축척 지정 · DXF 즉시 다운로드</li>
         </ul>
-        <a class="go" href="https://atelier-4-2.github.io/site/trait.html">Trait 열기 ›</a>
+        <a class="go" href="https://atelier-4-2.github.io/site/trait.html" data-tool="trait" data-i18n="t8Go">Trait 열기 ›</a>
       </li>
     </ul>
+
+    <section class="kit-section" aria-labelledby="kitSectionHeading">
+      <div class="kit-section-head">
+        <h2 id="kitSectionHeading" data-i18n="kitSecTitle">Studio Kit · 건축 실무 보조 도구</h2>
+        <span data-i18n="kitSecSub">계산 · 도면 그래픽 · 주리 발표 유틸리티를 3개 묶음으로 정리했습니다.</span>
+      </div>
+      <div class="kit-groups">
+        <div class="kit-group">
+          <h3 data-i18n="kg1Title">01 · 계산 · 기준</h3>
+          <p data-i18n="kg1Desc">축척·용지 변환, 건축 기준 치수, 레이저 판재 두께, CES/SDP 면적표, 일조·그림자 길이</p>
+          <div class="kit-chips">
+            <button type="button" class="kit-chip" data-open-calc="scale" data-i18n="tabScale">축척 · 용지</button>
+            <button type="button" class="kit-chip" data-open-calc="ref" data-i18n="tabRef">기준 치수 · 레이저</button>
+            <button type="button" class="kit-chip" data-open-calc="area" data-i18n="tabArea">면적 · CES/SDP</button>
+            <a class="kit-chip" href="./kit.html#calc" data-i18n="chipSun">일조 · 그림자 ›</a>
+          </div>
+        </div>
+        <div class="kit-group">
+          <h3 data-i18n="kg2Title">02 · 도면 그래픽 키트</h3>
+          <p data-i18n="kg2Desc">패널에 바로 붙이는 SVG 자산, 가로 단면 스케치, 선 굵기·컬러 팔레트, 로컬 이미지 압축</p>
+          <div class="kit-chips">
+            <a class="kit-chip" href="./kit.html#draw" data-i18n="chipScaleBar">스케일바 · 방위표 SVG ›</a>
+            <a class="kit-chip" href="./kit.html#draw" data-i18n="chipStreet">가로 단면 SVG ›</a>
+            <a class="kit-chip" href="./kit.html#draw" data-i18n="chipLine">선 굵기 · 팔레트 ›</a>
+            <a class="kit-chip" href="./kit.html#draw" data-i18n="chipComp">이미지 경량화 ›</a>
+          </div>
+        </div>
+        <div class="kit-group">
+          <h3 data-i18n="kg3Title">03 · 주리 · 발표 키트</h3>
+          <p data-i18n="kg3Desc">마감 D-Day·인쇄 전 점검, 발표 리허설 타이머, 한·불·영 건축 용어 사전, 브리프 & QR</p>
+          <div class="kit-chips">
+            <button type="button" class="kit-chip" id="kitJuryBtn" data-i18n="chipJury">D-Day · 인쇄 점검</button>
+            <button type="button" class="kit-chip" id="kitTimerBtn" data-i18n="timerTitle">발표 타이머</button>
+            <button type="button" class="kit-chip" id="kitGlossBtn" data-i18n="glossaryTitle">건축 용어 사전</button>
+            <a class="kit-chip" href="./brief.html" data-i18n="chipBrief">브리프 · QR ›</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer>
-    <b>Atelier 4·2</b> · 설치 없이 브라우저에서 바로 쓰는 도구
+    <span><b>Atelier 4·2</b> · <span data-i18n="footerTag">설치 없이 브라우저에서 바로 쓰는 도구</span></span>
+    <nav class="footer-links" aria-label="안내" data-i18n-aria="footerAria">
+      <a href="./kit.html" data-i18n="linkKit">Studio Kit</a>
+      <button type="button" class="footer-btn" id="footerCalcBtn" data-i18n="calcTitle">계산기</button>
+      <button type="button" class="footer-btn" id="changelogBtn" data-i18n="changelogTitle">업데이트 노트</button>
+      <a href="https://github.com/Atelier-4-2/Atelier-4-2.github.io/issues" target="_blank" rel="noopener" data-i18n="linkFeedback">피드백</a>
+      <a href="https://atelier-4-2.github.io/share/about.html" data-i18n="linkAbout">소개</a>
+      <a href="https://atelier-4-2.github.io/share/privacy.html" data-i18n="linkPrivacy">개인정보</a>
+      <a href="https://atelier-4-2.github.io/site/legal.html" data-i18n="linkLegal">출처·법적 고지</a>
+    </nav>
   </footer>
-  <script type="module">
-    const CLIENT_ID = "333501036096-o6m50cvb01b4t49kcedi4jq4a7kv42i3.apps.googleusercontent.com";
-    const btn = document.getElementById("hubDriveBtn");
-    const sec = document.getElementById("hubProjects");
-    const grid = document.getElementById("mpGrid");
-    const empty = document.getElementById("mpEmpty");
-    const userEl = document.getElementById("mpUser");
-    let cloud = null;
 
-    async function ensureCloud() {
-      if (cloud) return cloud;
-      const m = await import("./atelier-cloud.js");
-      cloud = m.createCloud({ googleClientId: CLIENT_ID, rootFolderName: "Atelier 4·2 Share" });
-      return cloud;
-    }
-    async function renderProjects() {
-      const s = cloud && cloud.signedIn ? (cloud.user || {}) : null;
-      btn.classList.toggle("on", !!s);
-      btn.textContent = s ? "내 프로젝트 ●" : "Drive 로그인";
-      sec.hidden = !s;
-      if (!s) return;
-      userEl.textContent = (s.emailAddress || s.displayName || "Google Drive") + " 연결됨";
-      grid.textContent = "";
-      try {
-        const list = await cloud.listProjects();
-        empty.hidden = list.length > 0;
-        for (const p of list) {
-          const card = document.createElement("div"); card.className = "mp-card";
-          const b = document.createElement("b"); b.textContent = p.name; card.append(b);
-          const links = document.createElement("div"); links.className = "mp-links";
-          const q = "?project=" + encodeURIComponent(p.id);
-          for (const [label, href] of [
-            ["Board", "https://atelier-4-2.github.io/site/" + q + "#board"],
-            ["View", "https://atelier-4-2.github.io/view/" + q],
-            ["Crit", "https://atelier-4-2.github.io/crit/" + q],
-            ["Share", "https://atelier-4-2.github.io/share/" + q],
-          ]) {
-            const a = document.createElement("a"); a.href = href; a.textContent = label; links.append(a);
-          }
-          card.append(links);
-          grid.append(card);
-        }
-      } catch (e) { userEl.textContent = "프로젝트 목록을 불러오지 못했습니다."; }
-    }
-    btn.addEventListener("click", async () => {
-      const c = await ensureCloud();
-      if (c.signedIn) { sec.scrollIntoView({ behavior: "smooth" }); return; }
-      try { await c.signIn("google"); await renderProjects(); } catch (e) { /* cancelled */ }
-    });
-    document.getElementById("mpSignOut").addEventListener("click", async () => {
-      if (cloud) { await cloud.signOut(); renderProjects(); }
-    });
-    document.getElementById("mpForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const inp = document.getElementById("mpName");
-      const name = inp.value.trim(); if (!name || !cloud) return;
-      try { await cloud.createProject(name); inp.value = ""; await renderProjects(); } catch (err) { alert("프로젝트를 만들지 못했습니다."); }
-    });
-    ensureCloud().then(c => c.restore()).then(ok => { if (ok) renderProjects(); }).catch(() => {});
-  </script>
+  <!-- Scale & Paper Calculator Modal -->
+  <div class="modal-backdrop" id="calcModal" hidden role="dialog" aria-modal="true" aria-labelledby="calcHeading">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="calcHeading" data-i18n="calcTitle">축척 · 용지 빠른 계산기</h2>
+        <button type="button" class="modal-close" data-close-modal="calcModal" aria-label="닫기">×</button>
+      </div>
+      <div class="modal-tabs" role="tablist">
+        <button type="button" class="modal-tab" role="tab" data-calc-tab="scale" aria-selected="true" data-i18n="tabScale">축척 · 용지</button>
+        <button type="button" class="modal-tab" role="tab" data-calc-tab="ref" aria-selected="false" data-i18n="tabRef">기준 치수 · 레이저</button>
+        <button type="button" class="modal-tab" role="tab" data-calc-tab="area" aria-selected="false" data-i18n="tabArea">면적 · CES/SDP</button>
+      </div>
+      <div id="calcTabScale">
+      <div class="scale-pills" id="scalePills" role="group" aria-label="축척 선택">
+        <button type="button" class="scale-pill" data-scale="20" aria-pressed="false">1/20</button>
+        <button type="button" class="scale-pill" data-scale="50" aria-pressed="false">1/50</button>
+        <button type="button" class="scale-pill" data-scale="100" aria-pressed="true">1/100</button>
+        <button type="button" class="scale-pill" data-scale="200" aria-pressed="false">1/200</button>
+        <button type="button" class="scale-pill" data-scale="500" aria-pressed="false">1/500</button>
+        <button type="button" class="scale-pill" data-scale="1000" aria-pressed="false">1/1000</button>
+        <input type="number" class="scale-custom" id="scaleCustom" min="1" max="100000" value="100" aria-label="직접 입력 축척 분모">
+      </div>
+      <div class="calc-row">
+        <div class="calc-field">
+          <label for="realInput" data-i18n="calcRealLabel">실제 치수</label>
+          <div class="calc-input-wrap">
+            <input type="number" id="realInput" step="any" value="3.6">
+            <select id="realUnit" aria-label="실제 단위">
+              <option value="m" selected>m</option>
+              <option value="cm">cm</option>
+            </select>
+          </div>
+        </div>
+        <div class="calc-field">
+          <label for="modelInput" data-i18n="calcModelLabel">도면 · 모형 치수</label>
+          <div class="calc-input-wrap">
+            <input type="number" id="modelInput" step="any" value="36">
+            <select id="modelUnit" aria-label="도면 단위">
+              <option value="mm" selected>mm</option>
+              <option value="cm">cm</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <p class="calc-section-title" data-i18n="calcAllScales">현재 실제 치수의 축척별 모형 크기</p>
+      <table class="calc-table">
+        <thead>
+          <tr>
+            <th data-i18n="calcColScale">축척</th>
+            <th data-i18n="calcColResult">도면 · 모형 치수</th>
+          </tr>
+        </thead>
+        <tbody id="scaleSummaryBody"></tbody>
+      </table>
+
+      <p class="calc-section-title" data-i18n="calcPaperTitle">ISO 용지 규격 (A0 – A4)</p>
+      <table class="calc-table">
+        <thead>
+          <tr>
+            <th data-i18n="calcColPaper">규격</th>
+            <th data-i18n="calcColDim">크기 (mm)</th>
+            <th data-i18n="calcColUse">주 용도</th>
+          </tr>
+        </thead>
+        <tbody id="paperTableBody"></tbody>
+      </table>
+      </div>
+
+      <div id="calcTabRef" hidden>
+        <p class="calc-section-title" style="margin-top:0" data-i18n="refDimTitle">자주 쓰는 건축 기준 치수 (프랑스 · 국제)</p>
+        <table class="calc-table">
+          <thead>
+            <tr>
+              <th data-i18n="refColItem">항목</th>
+              <th data-i18n="refColVal">기준 치수</th>
+            </tr>
+          </thead>
+          <tbody id="refDimBody"></tbody>
+        </table>
+
+        <p class="calc-section-title" data-i18n="refLaserTitle">레이저 커팅 판재 두께 → 축척별 실제 두께</p>
+        <table class="calc-table">
+          <thead>
+            <tr>
+              <th data-i18n="refColBoard">판재 두께</th>
+              <th>1/50</th>
+              <th>1/100</th>
+              <th>1/200</th>
+              <th>1/500</th>
+            </tr>
+          </thead>
+          <tbody id="refLaserBody"></tbody>
+        </table>
+      </div>
+
+      <div id="calcTabArea" hidden>
+        <div class="calc-row">
+          <div class="calc-field">
+            <label for="siteAreaIn" data-i18n="areaSiteLabel">대지 면적 (m²)</label>
+            <div class="calc-input-wrap"><input type="number" id="siteAreaIn" min="1" step="any" value="1200"></div>
+          </div>
+          <div class="calc-field">
+            <label for="footprintIn" data-i18n="areaFootprintLabel">건축 면적 · Emprise (m²)</label>
+            <div class="calc-input-wrap"><input type="number" id="footprintIn" min="0" step="any" value="480"></div>
+          </div>
+        </div>
+        <div class="calc-field" style="margin-bottom:10px">
+          <label for="circPctIn" data-i18n="areaCircLabel">순환 · 공용면적 가산 (%)</label>
+          <div class="calc-input-wrap"><input type="number" id="circPctIn" min="0" max="100" step="1" value="15" style="max-width:120px"></div>
+        </div>
+        <form class="room-add" id="roomAddForm">
+          <input type="text" id="roomNameIn" maxlength="40" placeholder="실 이름 (예: 아틀리에, 주거)" data-i18n-ph="roomNamePh">
+          <input type="number" id="roomAreaIn" min="0" step="any" placeholder="m²">
+          <button type="submit" class="btn primary" data-i18n="btnAdd">추가</button>
+        </form>
+        <ul class="check-list" id="roomList"></ul>
+        <div class="kpi-grid">
+          <div class="kpi-box"><small data-i18n="kpiCes">건폐율 (CES)</small><strong id="kpiCesVal">40%</strong></div>
+          <div class="kpi-box"><small data-i18n="kpiSdp">총 연면적 (SDP)</small><strong id="kpiSdpVal">0 m²</strong></div>
+          <div class="kpi-box"><small data-i18n="kpiCos">용적률 (COS)</small><strong id="kpiCosVal">0.00</strong></div>
+        </div>
+        <div class="actions" style="justify-content:flex-end;display:flex">
+          <button type="button" class="btn" id="copyAreaCsvBtn" data-i18n="btnCopyCsv">면적표 CSV 복사</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jury D-Day & Deliverable Checklist Modal -->
+  <div class="modal-backdrop" id="juryModal" hidden role="dialog" aria-modal="true" aria-labelledby="juryHeading">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="juryHeading" data-i18n="juryModalTitle">마감 · 주리 D-Day 체크리스트</h2>
+        <button type="button" class="modal-close" data-close-modal="juryModal" aria-label="닫기">×</button>
+      </div>
+      <div class="jury-form">
+        <input type="text" id="juryTitleInput" maxlength="40" placeholder="예: 최종 주리 (Jury final)" data-i18n-ph="juryTitlePh">
+        <input type="date" id="juryDateInput" aria-label="마감일">
+      </div>
+      <form class="check-add" id="checkAddForm">
+        <input type="text" id="checkAddInput" maxlength="60" placeholder="산출물 추가 (예: A0 패널 2장, 1:200 모형)" data-i18n-ph="checkAddPh">
+        <button type="submit" class="btn primary" data-i18n="btnAdd">추가</button>
+      </form>
+      <ul class="check-list" id="checkList"></ul>
+      <div class="feedback-bar">
+        <span class="jury-muted" data-i18n="juryLocalHint">이 브라우저에 자동 저장됩니다.</span>
+        <div class="projects-actions">
+          <button type="button" class="btn" id="juryPreflightBtn" data-i18n="juryPreflight">+ 인쇄 전 점검 불러오기</button>
+          <button type="button" class="btn" id="juryResetBtn" data-i18n="juryReset">초기화</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Studio Glossary Modal (FR / KO / EN) -->
+  <div class="modal-backdrop" id="glossaryModal" hidden role="dialog" aria-modal="true" aria-labelledby="glossaryHeading">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="glossaryHeading" data-i18n="glossaryTitle">한·불·영 건축 용어 사전</h2>
+        <button type="button" class="modal-close" data-close-modal="glossaryModal" aria-label="닫기">×</button>
+      </div>
+      <input type="search" class="cmd-input" id="glossInput" placeholder="예: Plan masse, 건폐율, Linteau, PMR…" data-i18n-ph="glossPh" autocomplete="off">
+      <ul class="gloss-list" id="glossList"></ul>
+    </div>
+  </div>
+
+  <!-- Jury Rehearsal Timer Modal -->
+  <div class="modal-backdrop" id="timerModal" hidden role="dialog" aria-modal="true" aria-labelledby="timerHeading">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="timerHeading" data-i18n="timerTitle">발표 리허설 페이스 타이머</h2>
+        <button type="button" class="modal-close" data-close-modal="timerModal" aria-label="닫기">×</button>
+      </div>
+      <div class="scale-pills" id="timerPresets" role="group" aria-label="발표 시간">
+        <button type="button" class="scale-pill" data-mins="5" aria-pressed="false">5 min</button>
+        <button type="button" class="scale-pill" data-mins="10" aria-pressed="true">10 min</button>
+        <button type="button" class="scale-pill" data-mins="15" aria-pressed="false">15 min</button>
+      </div>
+      <div class="timer-display" id="timerDisplay">
+        <div class="timer-clock" id="timerClock">10:00</div>
+        <div class="timer-stage-now" id="timerStageNow">도입</div>
+      </div>
+      <div class="timer-stages" id="timerStages"></div>
+      <div class="timer-controls">
+        <button type="button" class="btn primary" id="timerStartBtn" data-i18n="timerStart">시작</button>
+        <button type="button" class="btn" id="timerResetBtn" data-i18n="timerReset">초기화</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Command Palette Modal (Cmd+K / Ctrl+K) -->
+  <div class="modal-backdrop" id="cmdModal" hidden role="dialog" aria-modal="true" aria-label="빠른 실행">
+    <div class="modal cmd-modal">
+      <input type="search" class="cmd-input" id="cmdInput" placeholder="도구, 프로젝트, 기능 검색… (ESC 닫기)" data-i18n-ph="cmdPh" autocomplete="off">
+      <ul class="cmd-list" id="cmdList" role="listbox"></ul>
+    </div>
+  </div>
+
+  <!-- Changelog & Feedback Modal -->
+  <div class="modal-backdrop" id="changelogModal" hidden role="dialog" aria-modal="true" aria-labelledby="changelogHeading">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="changelogHeading" data-i18n="changelogTitle">업데이트 노트</h2>
+        <button type="button" class="modal-close" data-close-modal="changelogModal" aria-label="닫기">×</button>
+      </div>
+      <ul class="changelog-list" id="changelogList"></ul>
+      <div class="feedback-bar">
+        <span data-i18n="feedbackPrompt">오류 제보나 기능 제안이 있나요?</span>
+        <div class="projects-actions">
+          <a class="btn" href="https://github.com/Atelier-4-2/Atelier-4-2.github.io/issues" target="_blank" rel="noopener">GitHub Issues</a>
+          <a class="btn primary" href="mailto:ljae.archi@gmail.com?subject=Atelier%204%C2%B72%20Feedback" data-i18n="btnEmail">이메일 보내기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script type="module" src="hub.js"></script>
 </body>
 </html>

@@ -1,0 +1,32 @@
+{
+  "name": "Atelier 4·2",
+  "short_name": "4·2",
+  "description": "건축 학생을 위한 무료 브라우저 도구 — Terrain · Board · View · Crit · Share · Quiz",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1d1d1f",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Terrain", "url": "https://atelier-4-2.github.io/site/" },
+    { "name": "Board", "url": "https://atelier-4-2.github.io/board/" },
+    { "name": "View", "url": "https://atelier-4-2.github.io/view/" },
+    { "name": "Crit", "url": "https://atelier-4-2.github.io/crit/" },
+    { "name": "Share", "url": "https://atelier-4-2.github.io/share/" },
+    { "name": "Quiz", "url": "https://atelier-4-2.github.io/quiz/" }
+  ]
+}

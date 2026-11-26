@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <title>Studio Kit — Atelier 4·2</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('atelier-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    @font-face {
+      font-family: "Instrument Sans"; font-style: normal; font-weight: 600; font-display: swap;
+      src: url(./fonts/instrument-sans-latin-600-normal.woff2) format("woff2");
+    }
+    :root {
+      color-scheme: light;
+      --ink: #1d1d1f; --muted: #6e6e73; --line: #e5e5ea; --divider: #d2d2d7;
+      --surface: #f5f5f7; --paper: #ffffff; --background: #ffffff;
+      --nav: rgb(255 255 255 / 86%); --btn-bg: #1d1d1f; --btn-ink: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --ink: #f5f5f7; --muted: #a1a1a6; --line: #38383a; --divider: #48484a;
+        --surface: #1d1d1f; --paper: #111113; --background: #000000;
+        --nav: rgb(0 0 0 / 86%); --btn-bg: #f5f5f7; --btn-ink: #111113;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --ink: #f5f5f7; --muted: #a1a1a6; --line: #38383a; --divider: #48484a;
+      --surface: #1d1d1f; --paper: #111113; --background: #000000;
+      --nav: rgb(0 0 0 / 86%); --btn-bg: #f5f5f7; --btn-ink: #111113;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      margin: 0; background: var(--background); color: var(--ink);
+      font: 15px/1.55 "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    button, input, select { font: inherit; color: inherit; }
+
+    .page-header {
+      position: sticky; top: 0; z-index: 20;
+      background: var(--nav); backdrop-filter: saturate(180%) blur(16px);
+      -webkit-backdrop-filter: saturate(180%) blur(16px);
+      border-bottom: 1px solid var(--divider);
+    }
+    .nav-inner {
+      max-width: 1080px; margin: 0 auto; padding: 8px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .brand {
+      font-family: "Instrument Sans", sans-serif; font-weight: 600; font-size: 18px;
+      text-decoration: none;
+    }
+    .group-tabs {
+      display: inline-flex; gap: 3px; padding: 3px; border-radius: 980px; background: var(--surface);
+      overflow-x: auto; max-width: 100%;
+    }
+    .group-tab {
+      border: 0; background: transparent; cursor: pointer; white-space: nowrap;
+      padding: 6px 14px; border-radius: 980px; font-size: 13px; font-weight: 600; color: var(--muted);
+    }
+    .group-tab[aria-selected="true"] {
+      background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+    }
+    .lang { display: inline-flex; gap: 2px; padding: 3px; border-radius: 980px; background: var(--surface); }
+    .lang button {
+      border: 0; background: transparent; cursor: pointer; padding: 5px 9px;
+      border-radius: 980px; font-size: 12px; font-weight: 700; color: var(--muted); line-height: 1;
+    }
+    .lang button[aria-pressed="true"] { background: var(--paper); color: var(--ink); }
+
+    main { max-width: 1080px; margin: 0 auto; padding: 32px 20px 64px; }
+    .hero-mini { margin-bottom: 24px; }
+    .hero-mini h1 { margin: 0 0 4px; font-size: clamp(26px, 3.5vw, 34px); letter-spacing: -.025em; }
+    .hero-mini p { margin: 0; color: var(--muted); font-size: 15px; }
+
+    .kit-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 18px; background: var(--paper);
+      padding: 22px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .card.full { grid-column: 1 / -1; }
+    .card h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.015em; }
+    .card-desc { margin: -6px 0 0; font-size: 13px; color: var(--muted); }
+
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 120px; }
+    .field label { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .field input, .field select {
+      padding: 8px 10px; border-radius: 10px; border: 1px solid var(--divider);
+      background: var(--background); color: var(--ink); font-size: 14px; font-weight: 600;
+    }
+    .pill {
+      padding: 5px 11px; border-radius: 980px; border: 1px solid var(--line);
+      background: var(--surface); font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .pill[aria-pressed="true"] { background: var(--btn-bg); color: var(--btn-ink); border-color: var(--btn-bg); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 7px 14px; border-radius: 980px; border: 1px solid var(--line);
+      background: var(--paper); font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+    }
+    .btn:hover { border-color: var(--ink); }
+    .btn.primary { background: var(--btn-bg); color: var(--btn-ink); border-color: var(--btn-bg); }
+
+    .svg-stage {
+      padding: 18px; border-radius: 14px; border: 1px solid var(--line);
+      background: #ffffff; color: #1d1d1f;
+      display: flex; align-items: center; justify-content: center; min-height: 110px;
+      overflow-x: auto;
+    }
+    .svg-stage svg { max-width: 100%; height: auto; display: block; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { font-size: 12px; color: var(--muted); font-weight: 600; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* Lineweights & Palettes */
+    .lw-sample { display: inline-block; width: 72px; background: var(--ink); vertical-align: middle; border-radius: 2px; }
+    .palettes { display: grid; gap: 10px; }
+    .pal-row {
+      padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+    }
+    .pal-name { font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--muted); }
+    .swatches { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+    .swatch {
+      border: 1px solid rgb(0 0 0 / 12%); border-radius: 8px; padding: 24px 4px 6px;
+      font-family: "Instrument Sans", monospace; font-size: 11px; font-weight: 600;
+      text-align: center; cursor: pointer;
+    }
+
+    /* Street Section controls */
+    .street-sliders { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .sl-item {
+      padding: 8px 10px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line);
+      font-size: 12px;
+    }
+    .sl-item header { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px; }
+    .sl-item input[type="range"] { width: 100%; margin: 0; }
+
+    /* Image Compressor */
+    .drop-zone {
+      border: 1.5px dashed var(--divider); border-radius: 14px; padding: 22px;
+      text-align: center; background: var(--surface); cursor: pointer; font-size: 14px; color: var(--muted);
+    }
+    .drop-zone:hover, .drop-zone.over { border-color: var(--ink); color: var(--ink); }
+    .comp-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .comp-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+      padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+      font-size: 13px;
+    }
+
+    @media (max-width: 780px) {
+      .kit-grid, .street-sliders { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div class="nav-inner">
+      <a class="brand" href="./">← Atelier 4·2</a>
+      <div class="group-tabs" role="tablist" aria-label="Studio Kit 그룹">
+        <button type="button" class="group-tab" role="tab" data-group="draw" aria-selected="true" data-i18n="gDraw">도면 그래픽 키트</button>
+        <button type="button" class="group-tab" role="tab" data-group="calc" aria-selected="false" data-i18n="gCalc">일조 · 그림자 계산</button>
+        <button type="button" class="group-tab" role="tab" data-group="jury" aria-selected="false" data-i18n="gJury">주리 · 발표 바로가기</button>
+      </div>
+      <div class="lang" role="group" aria-label="언어 / Langue">
+        <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+        <button type="button" data-lang="ko" aria-pressed="true">KO</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero-mini">
+      <h1 data-i18n="title">Studio Kit</h1>
+      <p data-i18n="sub">도면 SVG 자산, 가로 단면 스케치, 일조·그림자 계산, 이미지 경량화를 브라우저에서 바로 씁니다.</p>
+    </div>
+
+    <!-- GROUP 1: DRAWING & GRAPHIC KIT -->
+    <section class="kit-grid" id="panelDraw">
+      <!-- 1. Scale bar & North arrow SVG -->
+      <article class="card">
+        <h2 data-i18n="sbTitle">스케일바 & 방위표 SVG 생성기</h2>
+        <p class="card-desc" data-i18n="sbDesc">축척과 방위각을 고르면 Illustrator·InDesign·Board에 바로 붙일 수 있는 흑백 벡터 SVG를 만듭니다.</p>
+        <div class="row" id="sbScalePills">
+          <button type="button" class="pill" data-sb-scale="50" aria-pressed="false">1/50</button>
+          <button type="button" class="pill" data-sb-scale="100" aria-pressed="true">1/100</button>
+          <button type="button" class="pill" data-sb-scale="200" aria-pressed="false">1/200</button>
+          <button type="button" class="pill" data-sb-scale="500" aria-pressed="false">1/500</button>
+          <button type="button" class="pill" data-sb-scale="1000" aria-pressed="false">1/1000</button>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="northAngle" data-i18n="northAngleLabel">북쪽 회전각 (°)</label>
+            <input type="number" id="northAngle" min="-180" max="360" step="5" value="0">
+          </div>
+          <div class="field">
+            <label for="northStyle" data-i18n="northStyleLabel">방위표 스타일</label>
+            <select id="northStyle">
+              <option value="minimal">Minimal Arrow</option>
+              <option value="circle">Compass Circle</option>
+              <option value="split">Split Triangle</option>
+            </select>
+          </div>
+        </div>
+        <div class="svg-stage" id="sbStage"></div>
+        <div class="row">
+          <button type="button" class="btn primary" id="sbCopyBtn" data-i18n="copySvg">SVG 복사</button>
+          <button type="button" class="btn" id="sbDlBtn" data-i18n="dlSvg">SVG 다운로드</button>
+        </div>
+      </article>
+
+      <!-- 2. Street Section SVG Sketcher -->
+      <article class="card">
+        <h2 data-i18n="stTitle">미니 가로 단면 스케처 (SVG)</h2>
+        <p class="card-desc" data-i18n="stDesc">보도·자전거·차도·식수대 폭을 조절해 대지 앞 가로 단면도를 벡터 SVG로 내려받습니다.</p>
+        <div class="street-sliders">
+          <div class="sl-item"><header><span data-i18n="stSwL">좌측 보도</span><span id="vSwL">2.5 m</span></header><input type="range" id="stSwL" min="1" max="6" step="0.5" value="2.5"></div>
+          <div class="sl-item"><header><span data-i18n="stBike">자전거길</span><span id="vBike">2.0 m</span></header><input type="range" id="stBike" min="0" max="4" step="0.5" value="2.0"></div>
+          <div class="sl-item"><header><span data-i18n="stRoad">차도</span><span id="vRoad">6.0 m</span></header><input type="range" id="stRoad" min="3" max="12" step="0.5" value="6.0"></div>
+          <div class="sl-item"><header><span data-i18n="stTree">식수대 · 주차</span><span id="vTree">2.0 m</span></header><input type="range" id="stTree" min="0" max="4" step="0.5" value="2.0"></div>
+          <div class="sl-item"><header><span data-i18n="stSwR">우측 보도</span><span id="vSwR">2.5 m</span></header><input type="range" id="stSwR" min="1" max="6" step="0.5" value="2.5"></div>
+          <div class="sl-item"><header><span data-i18n="stBldgH">인접 건물 높이</span><span id="vBldgH">12 m</span></header><input type="range" id="stBldgH" min="6" max="24" step="1" value="12"></div>
+        </div>
+        <div class="svg-stage" id="streetStage"></div>
+        <div class="row" style="justify-content:space-between">
+          <span style="font-size:13px;font-weight:700" id="streetTotal">총 폭: 15.0 m</span>
+          <button type="button" class="btn primary" id="streetDlBtn" data-i18n="dlStreetSvg">가로 단면 SVG 다운로드</button>
+        </div>
+      </article>
+
+      <!-- 3. Lineweight & Architecture Color Palettes -->
+      <article class="card">
+        <h2 data-i18n="lwTitle">도면 선 굵기 & 다이어그램 팔레트</h2>
+        <p class="card-desc" data-i18n="lwDesc">Rhino·Illustrator 표준 선 위계표와 저채도 건축 다이어그램 컬러(클릭 시 HEX 복사).</p>
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="lwColW">선 굵기</th>
+              <th data-i18n="lwColSample">미리보기</th>
+              <th data-i18n="lwColUse">권장 용도</th>
+            </tr>
+          </thead>
+          <tbody id="lwBody"></tbody>
+        </table>
+        <div class="palettes" id="palettesBox"></div>
+      </article>
+
+      <!-- 4. Local Image / Render Compressor -->
+      <article class="card">
+        <h2 data-i18n="compTitle">렌더 · 패널 이미지 경량화 (100% 로컬)</h2>
+        <p class="card-desc" data-i18n="compDesc">대용량 PNG/JPG 렌더를 서버 전송 없이 브라우저 안에서 제출용 크기·용량으로 바로 줄입니다.</p>
+        <div class="row">
+          <div class="field">
+            <label for="compMaxW" data-i18n="compMaxW">최대 가로(px)</label>
+            <select id="compMaxW">
+              <option value="1600">1600 px (웹·포트폴리오)</option>
+              <option value="2400" selected>2400 px (A3 인쇄·제출)</option>
+              <option value="3600">3600 px (고해상도)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="compFmt" data-i18n="compFmt">출력 포맷</label>
+            <select id="compFmt">
+              <option value="image/jpeg" selected>JPEG (.jpg)</option>
+              <option value="image/webp">WebP (.webp)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="compQual" data-i18n="compQual">품질 (0.6~0.95)</label>
+            <input type="number" id="compQual" min="0.5" max="0.95" step="0.05" value="0.82">
+          </div>
+        </div>
+        <label class="drop-zone" id="compDrop">
+          <input type="file" id="compInput" accept="image/*" multiple hidden>
+          <span data-i18n="compDropText">여기에 PNG · JPG 이미지를 끌어다 놓거나 클릭해서 선택하세요</span>
+        </label>
+        <ul class="comp-list" id="compList"></ul>
+      </article>
+    </section>
+
+    <!-- GROUP 2: SUN & SHADOW CALCULATOR -->
+    <section class="kit-grid" id="panelCalc" hidden>
+      <article class="card full">
+        <h2 data-i18n="sunTitle">그림자 길이 · 태양 고도 빠른 계산기</h2>
+        <p class="card-desc" data-i18n="sunDesc">위도와 건물 높이를 입력하면 하지·춘추분·동지 정오 기준 태양 고도와 그림자 길이를 바로 계산합니다.</p>
+        <div class="row" id="cityPills">
+          <button type="button" class="pill" data-lat="48.8566" aria-pressed="true">Paris (48.86°N)</button>
+          <button type="button" class="pill" data-lat="37.5665" aria-pressed="false">Seoul (37.57°N)</button>
+          <button type="button" class="pill" data-lat="45.7640" aria-pressed="false">Lyon (45.76°N)</button>
+          <button type="button" class="pill" data-lat="43.2965" aria-pressed="false">Marseille (43.30°N)</button>
+          <button type="button" class="pill" data-lat="51.5072" aria-pressed="false">London (51.51°N)</button>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="sunLat" data-i18n="sunLatLabel">위도 (°N)</label>
+            <input type="number" id="sunLat" min="0" max="75" step="0.01" value="48.86">
+          </div>
+          <div class="field">
+            <label for="sunH" data-i18n="sunHLabel">건물 높이 (m)</label>
+            <input type="number" id="sunH" min="1" max="300" step="0.5" value="15">
+          </div>
+        </div>
+        <div class="svg-stage" id="sunStage"></div>
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="sunColSeason">절기 (정오)</th>
+              <th class="num" data-i18n="sunColAlt">태양 고도각</th>
+              <th class="num" data-i18n="sunColRatio">그림자 배율 (L/H)</th>
+              <th class="num" data-i18n="sunColLen">그림자 길이 (m)</th>
+            </tr>
+          </thead>
+          <tbody id="sunBody"></tbody>
+        </table>
+      </article>
+    </section>
+
+    <!-- GROUP 3: JURY & HUB SHORTCUTS -->
+    <section class="kit-grid" id="panelJury" hidden>
+      <article class="card">
+        <h2 data-i18n="jCard1">허브 계산기 · 주리 체크리스트 · 타이머 · 용어사전</h2>
+        <p class="card-desc" data-i18n="jCard1Desc">축척·CES/SDP 계산기, 주리 D-Day 및 인쇄 전 점검, 발표 리허설 타이머, 한·불·영 건축 용어 사전은 메인 허브에서 ⌘K로 바로 열 수 있습니다.</p>
+        <div class="row">
+          <a class="btn primary" href="./" data-i18n="goHub">허브로 돌아가기 ›</a>
+          <a class="btn" href="./brief.html" data-i18n="goBrief">프로젝트 브리프 & QR 만들기 ›</a>
+        </div>
+      </article>
+      <article class="card">
+        <h2 data-i18n="jCard2">외부 무료 참고 도구 (리서치 추천)</h2>
+        <p class="card-desc" data-i18n="jCard2Desc">Atelier 4·2와 함께 쓰기 좋은 무료 브라우저 건축 도구들입니다.</p>
+        <div class="row">
+          <a class="btn" href="https://www.suncalc.org/" target="_blank" rel="noopener">SunCalc</a>
+          <a class="btn" href="https://shademap.app/" target="_blank" rel="noopener">ShadeMap 3D</a>
+          <a class="btn" href="https://www.dimensions.com/" target="_blank" rel="noopener">Dimensions.com</a>
+          <a class="btn" href="https://www.ventusky.com/" target="_blank" rel="noopener">Ventusky</a>
+          <a class="btn" href="https://cadmapper.com/" target="_blank" rel="noopener">Cadmapper</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="kit.js"></script>
+</body>
+</html>
