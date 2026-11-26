@@ -29,10 +29,20 @@
       lwTitle: '도면 선 굵기 & 다이어그램 팔레트',
       lwDesc: 'Rhino·Illustrator 표준 선 위계표와 저채도 건축 다이어그램 컬러(클릭 시 HEX 복사).',
       lwColW: '선 굵기', lwColSample: '미리보기', lwColUse: '권장 용도',
-      compTitle: '렌더 · 패널 이미지 경량화 (100% 로컬)',
-      compDesc: '대용량 PNG/JPG 렌더를 서버 전송 없이 브라우저 안에서 제출용 크기·용량으로 바로 줄입니다.',
-      compMaxW: '최대 가로(px)', compFmt: '출력 포맷', compQual: '품질 (0.5~0.95)',
+      compTitle: '렌더 경량화 & 인쇄 DPI 검사기 (100% 로컬)',
+      compDesc: '이미지를 올리면 목표 판형(A0~A4) 기준 인쇄 DPI 적합 여부를 자동 진단하고, 제출용으로 경량화합니다.',
+      compPrintFmt: '인쇄 판형 (DPI 검사)',
+      compMaxW: '최대 가로(px)', compFmt: '출력 포맷', compQual: '품질',
       compDropText: '여기에 PNG · JPG 이미지를 끌어다 놓거나 클릭해서 선택하세요',
+      dpiOk: '인쇄 최적', dpiMid: '최소 충족', dpiLow: '해상도 부족',
+      photoPalTitle: '사진 → 건축 컬러 팔레트 자동 추출',
+      photoPalDrop: '레퍼런스 · 대지 사진을 올려 5색 팔레트 추출',
+      palSvgDl: '팔레트 SVG 다운로드',
+      refTitle: '미니 레퍼런스 스크랩북 (Are.na 스타일)',
+      refDesc: '설계 레퍼런스 이미지·URL·메모를 태그별로 모아두고 Markdown으로 내보내거나 Board에서 바로 활용합니다.',
+      refAll: '전체', refExportMd: 'Markdown 복사', refAddBtn: '+ 블록 추가',
+      refEmpty: '아직 저장된 레퍼런스가 없습니다. 위 폼에서 첫 레퍼런스를 추가해 보세요.',
+      refOpenLink: '원본 링크', refDel: '삭제',
       dl: '다운로드',
       sunTitle: '그림자 길이 · 태양 고도 빠른 계산기',
       sunDesc: '위도와 건물 높이를 입력하면 하지·춘추분·동지 정오 기준 태양 고도와 그림자 길이를 바로 계산합니다.',
@@ -66,10 +76,20 @@
       lwTitle: 'Épaisseurs de traits & Palettes',
       lwDesc: 'Hiérarchie standard Rhino/Illustrator et palettes sobres pour diagrammes (clic = copier HEX).',
       lwColW: 'Trait', lwColSample: 'Aperçu', lwColUse: 'Usage conseillé',
-      compTitle: 'Compression d’images de rendu (100 % local)',
-      compDesc: 'Réduisez vos PNG/JPG lourds dans le navigateur sans aucun envoi serveur.',
-      compMaxW: 'Largeur max (px)', compFmt: 'Format', compQual: 'Qualité (0.5–0.95)',
+      compTitle: 'Compression d’images & Contrôle DPI (100 % local)',
+      compDesc: 'Vérifiez automatiquement les DPI pour votre format d’impression (A0–A4) et réduisez vos rendus en local.',
+      compPrintFmt: 'Format d’impression (DPI)',
+      compMaxW: 'Largeur max (px)', compFmt: 'Format', compQual: 'Qualité',
       compDropText: 'Déposez vos images PNG/JPG ici ou cliquez pour choisir',
+      dpiOk: 'Optimal', dpiMid: 'Acceptable', dpiLow: 'DPI insuffisant',
+      photoPalTitle: 'Photo → Extraction de palette (5 couleurs)',
+      photoPalDrop: 'Déposez une photo de site ou référence pour extraire 5 teintes',
+      palSvgDl: 'Télécharger palette SVG',
+      refTitle: 'Carnet de références minimal (style Are.na)',
+      refDesc: 'Archivez vos références (image, lien, note) par tag et exportez-les en Markdown ou ouvrez Board.',
+      refAll: 'Tous', refExportMd: 'Copier Markdown', refAddBtn: '+ Ajouter',
+      refEmpty: 'Aucune référence enregistrée. Ajoutez votre premier bloc ci-dessus.',
+      refOpenLink: 'Lien', refDel: 'Supprimer',
       dl: 'Télécharger',
       sunTitle: 'Calculateur d’ombres & hauteur solaire',
       sunDesc: 'Estimez l’angle solaire et la portée d’ombre au midi solaire (solstices et équinoxes).',
@@ -335,7 +355,14 @@
     const blob = await new Promise((res) => cv.toBlob(res, fmt, qual));
     const ext = fmt === 'image/webp' ? 'webp' : 'jpg';
     const base = file.name.replace(/\.[^.]+$/, '');
-    return { name: `${base}_lite.${ext}`, origSize: file.size, newSize: blob.size, w, h, blob };
+    // Print DPI check against chosen ISO sheet (orienting sheet to match image orientation)
+    const fmtStr = (document.getElementById('compPrintFmt')?.value || '297x420').split('x').map(Number);
+    const sheetLong = Math.max(fmtStr[0], fmtStr[1]);
+    const sheetShort = Math.min(fmtStr[0], fmtStr[1]);
+    const imgLong = Math.max(img.width, img.height);
+    const imgShort = Math.min(img.width, img.height);
+    const dpi = Math.round(Math.min(imgLong / (sheetLong / 25.4), imgShort / (sheetShort / 25.4)));
+    return { name: `${base}_lite.${ext}`, origSize: file.size, newSize: blob.size, w, h, origW: img.width, origH: img.height, dpi, blob };
   }
 
   async function handleFiles(files) {
@@ -348,7 +375,11 @@
         const li = document.createElement('li');
         li.className = 'comp-item';
         const info = document.createElement('span');
-        info.textContent = `${res.name} (${res.w}×${res.h}) · ${fmtBytes(res.origSize)} → ${fmtBytes(res.newSize)} (-${pct}%)`;
+        info.textContent = `${res.name} (${res.origW}×${res.origH} → ${res.w}×${res.h}) · ${fmtBytes(res.origSize)} → ${fmtBytes(res.newSize)} (-${pct}%)`;
+        const badge = document.createElement('span');
+        badge.className = 'dpi-badge ' + (res.dpi >= 250 ? 'dpi-ok' : res.dpi >= 150 ? 'dpi-mid' : 'dpi-low');
+        badge.textContent = `${res.dpi} DPI · ${res.dpi >= 250 ? t('dpiOk') : res.dpi >= 150 ? t('dpiMid') : t('dpiLow')}`;
+        info.appendChild(badge);
         const a = document.createElement('a');
         a.className = 'btn';
         a.href = URL.createObjectURL(res.blob);
@@ -419,6 +450,232 @@
   document.getElementById('sunLat').addEventListener('input', renderSunCalc);
   document.getElementById('sunH').addEventListener('input', renderSunCalc);
 
+  /* ---------- 6. Photo -> 5-Color Architectural Palette Extractor ---------- */
+  let lastExtractedHexes = [];
+
+  async function extractPaletteFromFile(file) {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+    URL.revokeObjectURL(url);
+    const cv = document.createElement('canvas');
+    const size = 48;
+    cv.width = size; cv.height = size;
+    const ctx = cv.getContext('2d');
+    ctx.drawImage(img, 0, 0, size, size);
+    const data = ctx.getImageData(0, 0, size, size).data;
+    const buckets = new Map();
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] < 128) continue;
+      const r = Math.round(data[i] / 24) * 24;
+      const g = Math.round(data[i + 1] / 24) * 24;
+      const b = Math.round(data[i + 2] / 24) * 24;
+      const key = `${Math.min(255, r)},${Math.min(255, g)},${Math.min(255, b)}`;
+      buckets.set(key, (buckets.get(key) || 0) + 1);
+    }
+    const sorted = [...buckets.entries()].sort((a, b) => b[1] - a[1]);
+    const picked = [];
+    for (const [key] of sorted) {
+      const rgb = key.split(',').map(Number);
+      const tooClose = picked.some((p) => Math.hypot(p[0] - rgb[0], p[1] - rgb[1], p[2] - rgb[2]) < 52);
+      if (!tooClose) picked.push(rgb);
+      if (picked.length >= 5) break;
+    }
+    while (picked.length < 5 && sorted.length) {
+      picked.push(sorted[picked.length % sorted.length][0].split(',').map(Number));
+    }
+    return picked.map(([r, g, b]) => '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('').toUpperCase());
+  }
+
+  function renderExtractedPalette(hexes) {
+    lastExtractedHexes = hexes;
+    const box = document.getElementById('extractedSwatches');
+    const act = document.getElementById('extractedActions');
+    if (!box || !act) return;
+    box.innerHTML = '';
+    for (const hex of hexes) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'swatch';
+      btn.style.background = hex;
+      const lum = parseInt(hex.slice(1, 3), 16) * 0.299 + parseInt(hex.slice(3, 5), 16) * 0.587 + parseInt(hex.slice(5, 7), 16) * 0.114;
+      btn.style.color = lum > 150 ? '#1d1d1f' : '#ffffff';
+      btn.textContent = hex;
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(hex);
+          btn.textContent = t('copied');
+          setTimeout(() => { btn.textContent = hex; }, 1100);
+        } catch (e) {}
+      });
+      box.appendChild(btn);
+    }
+    box.hidden = false;
+    act.hidden = false;
+  }
+
+  const palInput = document.getElementById('palInput');
+  const palDrop = document.getElementById('palDrop');
+  palInput?.addEventListener('change', async () => {
+    const f = palInput.files && palInput.files[0];
+    if (f) renderExtractedPalette(await extractPaletteFromFile(f));
+    palInput.value = '';
+  });
+  ['dragenter', 'dragover'].forEach((ev) => palDrop?.addEventListener(ev, (e) => { e.preventDefault(); palDrop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach((ev) => palDrop?.addEventListener(ev, (e) => { e.preventDefault(); palDrop.classList.remove('over'); }));
+  palDrop?.addEventListener('drop', async (e) => {
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) renderExtractedPalette(await extractPaletteFromFile(f));
+  });
+  document.getElementById('palSvgDlBtn')?.addEventListener('click', () => {
+    if (!lastExtractedHexes.length) return;
+    const w = 500, h = 120, sw = w / lastExtractedHexes.length;
+    const parts = lastExtractedHexes.map((hex, i) =>
+      `<rect x="${i * sw}" y="0" width="${sw}" height="86" fill="${hex}"/><text x="${i * sw + sw / 2}" y="108" font-family="sans-serif" font-size="12" font-weight="600" text-anchor="middle" fill="#1d1d1f">${hex}</text>`
+    ).join('');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><rect width="${w}" height="${h}" fill="#ffffff"/>${parts}</svg>`;
+    const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'atelier-palette.svg';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+
+  /* ---------- 7. Reference Scrapbook (Are.na style) ---------- */
+  const REF_KEY = 'atelier-refs-v1';
+  let refFilter = 'all';
+
+  function loadRefs() {
+    try {
+      const d = JSON.parse(localStorage.getItem(REF_KEY) || '[]');
+      if (Array.isArray(d)) return d;
+    } catch (e) {}
+    return [];
+  }
+  function saveRefs(list) { try { localStorage.setItem(REF_KEY, JSON.stringify(list)); } catch (e) {} }
+
+  async function makeThumbDataUrl(file) {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+    URL.revokeObjectURL(url);
+    const maxW = 320;
+    const ratio = img.width > maxW ? maxW / img.width : 1;
+    const cv = document.createElement('canvas');
+    cv.width = Math.round(img.width * ratio);
+    cv.height = Math.round(img.height * ratio);
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    return cv.toDataURL('image/jpeg', 0.72);
+  }
+
+  function renderRefs() {
+    const grid = document.getElementById('refGrid');
+    if (!grid) return;
+    const all = loadRefs();
+    const list = refFilter === 'all' ? all : all.filter((r) => r.tag === refFilter);
+    grid.innerHTML = '';
+    if (!list.length) {
+      const li = document.createElement('li');
+      li.style.gridColumn = '1 / -1';
+      li.style.fontSize = '13px';
+      li.style.color = 'var(--muted)';
+      li.textContent = t('refEmpty');
+      grid.appendChild(li);
+      return;
+    }
+    list.forEach((r) => {
+      const li = document.createElement('li');
+      li.className = 'ref-card';
+      if (r.img) {
+        const im = document.createElement('img');
+        im.className = 'ref-thumb';
+        im.src = r.img;
+        im.alt = r.title;
+        li.appendChild(im);
+      }
+      const body = document.createElement('div');
+      body.className = 'ref-body';
+      const top = document.createElement('div');
+      top.className = 'ref-top';
+      const tag = document.createElement('span');
+      tag.className = 'ref-tag';
+      tag.textContent = r.tag;
+      top.appendChild(tag);
+      const title = document.createElement('p');
+      title.className = 'ref-title';
+      title.textContent = r.title;
+      body.append(top, title);
+      if (r.note) {
+        const note = document.createElement('p');
+        note.className = 'ref-note';
+        note.textContent = r.note;
+        body.appendChild(note);
+      }
+      const acts = document.createElement('div');
+      acts.className = 'ref-actions';
+      if (r.url && /^https?:\/\//i.test(r.url)) {
+        const a = document.createElement('a');
+        a.href = r.url; a.target = '_blank'; a.rel = 'noopener';
+        a.textContent = t('refOpenLink');
+        acts.appendChild(a);
+      }
+      const boardA = document.createElement('a');
+      boardA.href = 'https://atelier-4-2.github.io/board/';
+      boardA.textContent = 'Board ›';
+      acts.appendChild(boardA);
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.textContent = t('refDel');
+      del.addEventListener('click', () => {
+        saveRefs(loadRefs().filter((x) => x.id !== r.id));
+        renderRefs();
+      });
+      acts.appendChild(del);
+      body.appendChild(acts);
+      li.appendChild(body);
+      grid.appendChild(li);
+    });
+  }
+
+  document.getElementById('refForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = (document.getElementById('refTitleIn')?.value || '').trim();
+    if (!title) return;
+    const tag = document.getElementById('refTagIn')?.value || '구조';
+    const url = (document.getElementById('refUrlIn')?.value || '').trim();
+    const note = (document.getElementById('refNoteIn')?.value || '').trim();
+    const imgIn = document.getElementById('refImgIn');
+    let img = '';
+    if (imgIn && imgIn.files && imgIn.files[0]) {
+      try { img = await makeThumbDataUrl(imgIn.files[0]); } catch (err) {}
+    }
+    const list = loadRefs();
+    list.unshift({ id: Date.now() + Math.random(), title, tag, url, note, img });
+    saveRefs(list);
+    e.target.reset();
+    renderRefs();
+  });
+
+  document.querySelectorAll('#refFilterPills .pill').forEach((b) => {
+    b.addEventListener('click', () => {
+      refFilter = b.dataset.refFilter || 'all';
+      document.querySelectorAll('#refFilterPills .pill').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      renderRefs();
+    });
+  });
+
+  document.getElementById('refExportMdBtn')?.addEventListener('click', async () => {
+    const list = loadRefs();
+    const md = list.map((r) => `- **[${r.tag}] ${r.title}**${r.url ? ` (${r.url})` : ''}${r.note ? `\n  ${r.note}` : ''}`).join('\n');
+    try {
+      await navigator.clipboard.writeText(md || '# References');
+      const b = document.getElementById('refExportMdBtn');
+      b.textContent = t('copied');
+      setTimeout(() => { b.textContent = t('refExportMd'); }, 1500);
+    } catch (e) {}
+  });
+
   /* ---------- Language wiring ---------- */
   function applyLang() {
     document.documentElement.lang = lang;
@@ -430,6 +687,7 @@
     buildStreetSvg();
     renderLineweightsAndPalettes();
     renderSunCalc();
+    renderRefs();
   }
 
   document.querySelectorAll('.lang button[data-lang]').forEach((b) => {

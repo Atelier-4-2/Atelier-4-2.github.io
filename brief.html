@@ -121,6 +121,7 @@
     <a class="brand" href="./">← Atelier 4·2</a>
     <div class="actions">
       <button type="button" class="btn" id="toggleEditBtn">편집</button>
+      <button type="button" class="btn" id="exportMdBtn">Markdown (.md)</button>
       <button type="button" class="btn" id="printBtn">PDF 인쇄</button>
       <button type="button" class="btn primary" id="copyUrlBtn">공유 링크 복사</button>
     </div>
@@ -158,8 +159,11 @@
           <input id="fSub" type="text" maxlength="100" placeholder="예: ENSA Paris-Belleville · S6 · 2026">
         </div>
         <div class="field">
-          <label for="fNote" id="lNote">프로젝트 요약 (개념 · 산출물 메모)</label>
-          <textarea id="fNote" maxlength="600" placeholder="교수님·팀원에게 전달할 짧은 설명과 도면 구성을 적어주세요."></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <label for="fNote" id="lNote">프로젝트 요약 (개념 · 산출물 메모)</label>
+            <button type="button" class="btn" id="fillTemplateBtn" style="padding:4px 10px;font-size:12px">+ ENSA 주리 컨셉 템플릿</button>
+          </div>
+          <textarea id="fNote" maxlength="1600" placeholder="교수님·팀원에게 전달할 짧은 설명과 도면 구성을 적어주세요."></textarea>
         </div>
         <div class="field">
           <label for="fDrive" id="lDrive">자료 폴더 링크 (Google Drive / Share)</label>
@@ -195,6 +199,8 @@
       qrTitle: 'QR code vectoriel pour planche (SVG)',
       qrDesc: 'Placez ce QR code sur votre planche A0/A1 pour ouvrir cette fiche et vos fichiers depuis un téléphone.',
       qrDl: 'Télécharger QR SVG',
+      fillTpl: '+ Modèle de jury ENSA',
+      tplText: '1. Contexte (Site) : \n2. Problématique : \n3. Parti architectural (Concept) : \n4. Programme & Surfaces : \n5. Structure & Matérialité : ',
     } : {
       edit: '편집', print: 'PDF 인쇄', copy: '공유 링크 복사', copied: '링크 복사됨',
       buildHeading: '프로젝트 브리프 카드 만들기',
@@ -209,6 +215,8 @@
       qrTitle: '패널 부착용 벡터 QR 코드 (SVG)',
       qrDesc: 'A0·A1 패널 구석에 붙여두면 스캔만으로 이 브리프와 3D·도면 폴더가 열립니다.',
       qrDl: 'QR SVG 다운로드',
+      fillTpl: '+ ENSA 주리 컨셉 템플릿',
+      tplText: '1. Contexte (대지 맥락) : \n2. Problématique (문제의식) : \n3. Parti architectural (설계 개념) : \n4. Programme (프로그램 · 면적) : \n5. Matérialité (구조 · 재료) : ',
     };
 
     document.getElementById('toggleEditBtn').textContent = L.edit;
@@ -224,6 +232,27 @@
     document.getElementById('qrTitle').textContent = L.qrTitle;
     document.getElementById('qrDesc').textContent = L.qrDesc;
     document.getElementById('qrDownloadBtn').textContent = L.qrDl;
+    document.getElementById('fillTemplateBtn').textContent = L.fillTpl;
+
+    document.getElementById('fillTemplateBtn').addEventListener('click', () => {
+      const ta = document.getElementById('fNote');
+      ta.value = ta.value.trim() ? ta.value.trim() + '\n\n' + L.tplText : L.tplText;
+      ta.focus();
+    });
+
+    document.getElementById('exportMdBtn').addEventListener('click', () => {
+      const title = document.getElementById('vTitle').textContent || 'Project Brief';
+      const sub = document.getElementById('vSub').textContent || '';
+      const note = document.getElementById('vNote').textContent || '';
+      const drive = document.getElementById('fDrive').value || '';
+      const md = `# ${title}\n${sub ? `> ${sub}\n` : ''}\n${note}\n${drive ? `\n- Drive: ${drive}\n` : ''}\n- Brief URL: ${location.href}\n`;
+      const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${title.replace(/[^a-zA-Z0-9가-힣_-]+/g, '_')}_brief.md`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    });
 
     let currentQrSvg = '';
     function renderQr(url) {
