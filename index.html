@@ -160,30 +160,30 @@
     main {
       width: min(1160px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 72px 0 48px;
+      padding: 48px 0 48px;
       text-align: center;
       word-break: keep-all;
     }
     .eyebrow {
-      margin: 0 0 14px;
+      margin: 0 0 12px;
       font-family: "Instrument Sans", sans-serif; font-weight: 600; font-size: 13px;
       letter-spacing: .02em; color: var(--muted);
     }
     h1 {
-      margin: 0 0 18px;
-      font-size: clamp(38px, 5vw, 56px); line-height: 1.15; letter-spacing: -.03em; font-weight: 700;
+      margin: 0 0 14px;
+      font-size: clamp(36px, 4.8vw, 52px); line-height: 1.15; letter-spacing: -.03em; font-weight: 700;
       text-wrap: balance;
     }
     .subhead {
       max-width: 660px; margin: 0 auto;
-      color: var(--muted); font-size: clamp(17px, 2vw, 21px); line-height: 1.55; letter-spacing: -.015em;
+      color: var(--muted); font-size: clamp(16px, 1.9vw, 20px); line-height: 1.55; letter-spacing: -.015em;
       text-wrap: balance;
     }
 
     /* Recent resume banner */
     .recent-bar {
       display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
-      margin: 24px auto 0; padding: 8px 14px;
+      margin: 16px auto 0; padding: 6px 12px;
       border: 1px solid var(--line); border-radius: 980px; background: var(--surface);
       font-size: 13px; color: var(--muted);
     }
@@ -198,32 +198,11 @@
     }
     .recent-close:hover { color: var(--ink); }
 
-    /* Workflow strip */
-    .workflow {
-      max-width: 1080px; margin: 36px auto 0;
-      padding: 12px 16px; border: 1px solid var(--line); border-radius: 14px;
-      background: var(--surface);
-      display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
-      font-size: 13px; color: var(--muted);
-    }
-    .workflow-label {
-      font-weight: 700; color: var(--ink); margin-right: 6px;
-    }
-    .wf-step {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 4px 10px; border-radius: 980px; background: var(--paper);
-      border: 1px solid var(--line); text-decoration: none; color: var(--ink); font-weight: 600;
-      transition: border-color 120ms ease;
-    }
-    .wf-step:hover { border-color: var(--ink); }
-    .wf-step span { color: var(--muted); font-weight: 500; }
-    .wf-arrow { color: var(--divider); font-weight: 700; user-select: none; }
-
     /* My Projects section */
     .projects-wrap {
-      max-width: 1080px; margin: 28px auto 0; text-align: left;
+      max-width: 1080px; margin: 18px auto 0; text-align: left;
       border: 1px solid var(--line); border-radius: 18px; background: var(--paper);
-      padding: 18px 22px;
+      padding: 16px 20px;
     }
     .projects-head {
       display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
@@ -385,9 +364,9 @@
       padding: 1px 5px; border-radius: 5px; background: var(--surface); border: 1px solid var(--line);
     }
 
-    /* D-Day & Quick Try strip */
+    /* D-Day & Quick Shortcuts strip */
     .meta-strip {
-      max-width: 1080px; margin: 14px auto 0;
+      max-width: 1080px; margin: 24px auto 0;
       display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
     }
     .jury-pill {
@@ -406,25 +385,35 @@
       display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;
       font-size: 12px; color: var(--muted);
     }
-    .try-strip a {
-      padding: 5px 10px; border-radius: 980px; border: 1px solid var(--line);
+    .try-strip a, .try-strip button {
+      padding: 6px 11px; border-radius: 980px; border: 1px solid var(--line);
       background: var(--surface); color: var(--ink); text-decoration: none; font-weight: 600;
-      transition: border-color 120ms ease;
+      cursor: pointer; transition: border-color 120ms ease;
     }
-    .try-strip a:hover { border-color: var(--ink); }
+    .try-strip a:hover, .try-strip button:hover { border-color: var(--ink); }
 
     /* Modal Tabs (Calculator) */
     .modal-tabs {
-      display: inline-flex; gap: 3px; padding: 3px; border-radius: 980px;
+      display: inline-flex; flex-wrap: wrap; gap: 3px; padding: 3px; border-radius: 14px;
       background: var(--surface); margin-bottom: 16px;
     }
     .modal-tab {
-      border: 0; background: transparent; cursor: pointer;
+      border: 0; background: transparent; cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center;
       padding: 6px 13px; border-radius: 980px; font-size: 13px; font-weight: 600; color: var(--muted);
+      transition: color 120ms ease;
     }
+    .modal-tab:hover { color: var(--ink); }
     .modal-tab[aria-selected="true"] {
       background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
     }
+    .inline-link {
+      display: inline-flex; align-items: center; gap: 2px;
+      font-size: 12px; font-weight: 700; color: var(--ink); text-decoration: none;
+      border-bottom: 1px solid var(--divider); transition: border-color 120ms ease;
+    }
+    .inline-link:hover { border-color: var(--ink); }
+    .ref-sublink { display: inline-block; margin-top: 3px; }
 
     /* D-Day Checklist Modal */
     .jury-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 14px; }
@@ -527,40 +516,6 @@
     .timer-stage.active strong { color: var(--btn-ink); }
     .timer-controls { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
 
-    /* Grouped Studio Kit section on Hub */
-    .kit-section {
-      max-width: 1080px; margin: 36px auto 0; text-align: left;
-    }
-    .kit-section-head {
-      display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-      margin-bottom: 12px; flex-wrap: wrap;
-    }
-    .kit-section-head h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.015em; }
-    .kit-section-head span { font-size: 13px; color: var(--muted); }
-    .kit-groups {
-      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px;
-    }
-    .kit-group {
-      padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface);
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .kit-group h3 { margin: 0; font-size: 15px; font-weight: 700; }
-    .kit-group p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
-    .kit-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 4px; }
-    .kit-chip {
-      padding: 5px 10px; border-radius: 980px; border: 1px solid var(--line);
-      background: var(--paper); color: var(--ink); font-size: 12px; font-weight: 600;
-      text-decoration: none; cursor: pointer; transition: border-color 120ms ease;
-    }
-    .kit-chip:hover { border-color: var(--ink); }
-
-    @media (max-width: 900px) and (min-width: 641px) {
-      .kit-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media (max-width: 640px) {
-      .kit-groups { grid-template-columns: 1fr; }
-    }
-
     @media (max-width: 520px) {
       .calc-row, .jury-form, .kpi-grid { grid-template-columns: 1fr; }
       .room-add { grid-template-columns: 1fr 80px auto; }
@@ -571,7 +526,7 @@
     /* Tools Grid */
     .tools {
       display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;
-      max-width: 1080px; margin: 28px auto 0; padding: 0; list-style: none; text-align: left;
+      max-width: 1080px; margin: 20px auto 0; padding: 0; list-style: none; text-align: left;
     }
     .tool {
       position: relative; display: flex; flex-direction: column; min-width: 0;
@@ -628,12 +583,9 @@
       .site-switch { order: 3; width: 100%; justify-content: flex-start; }
     }
     @media (max-width: 640px) {
-      main { padding-top: 40px; }
+      main { padding-top: 32px; }
       .subhead br { display: none; }
-      .workflow { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
-      .workflow::-webkit-scrollbar { display: none; }
-      .workflow-label, .wf-step, .wf-arrow { flex-shrink: 0; }
-      .tools { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 20px; }
+      .tools { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 16px; }
       .projects-grid { grid-template-columns: minmax(0, 1fr); }
       .tool { padding: 22px; }
       .tool h2 { font-size: 24px; }
@@ -652,6 +604,9 @@
         <a href="https://atelier-4-2.github.io/crit/" data-tool="crit">Crit</a>
         <a href="https://atelier-4-2.github.io/share/" data-tool="share">Share</a>
         <a href="https://atelier-4-2.github.io/quiz/" data-tool="quiz">Quiz</a>
+        <a href="https://atelier-4-2.github.io/site/stair.html" data-tool="stair">Stair</a>
+        <a href="https://atelier-4-2.github.io/site/trait.html" data-tool="trait">Trait</a>
+        <a href="./kit.html" data-tool="kit">Kit</a>
       </nav>
       <div class="nav-controls">
         <button type="button" class="btn" id="btnInstallPwa" hidden data-i18n="btnInstall">앱 설치</button>
@@ -688,29 +643,16 @@
       <button type="button" class="recent-close" id="recentClose" aria-label="닫기">×</button>
     </div>
 
-    <div class="workflow" aria-label="작업 흐름" data-i18n-aria="workflowAria">
-      <span class="workflow-label" data-i18n="wfLabel">작업 흐름</span>
-      <a class="wf-step" href="https://atelier-4-2.github.io/site/" data-tool="terrain">Terrain <span data-i18n="wfTerrain">대지 분석</span></a>
-      <span class="wf-arrow" aria-hidden="true">→</span>
-      <a class="wf-step" href="https://atelier-4-2.github.io/view/" data-tool="view">View <span data-i18n="wfView">3D 검토</span></a>
-      <span class="wf-arrow" aria-hidden="true">→</span>
-      <a class="wf-step" href="https://atelier-4-2.github.io/crit/" data-tool="crit">Crit <span data-i18n="wfCrit">크리틱</span></a>
-      <span class="wf-arrow" aria-hidden="true">→</span>
-      <a class="wf-step" href="https://atelier-4-2.github.io/board/" data-tool="board">Board <span data-i18n="wfBoard">패널 배치</span></a>
-      <span class="wf-arrow" aria-hidden="true">→</span>
-      <a class="wf-step" href="https://atelier-4-2.github.io/share/" data-tool="share">Share <span data-i18n="wfShare">자료 공유</span></a>
-    </div>
-
     <div class="meta-strip">
       <button type="button" class="jury-pill" id="juryBtn">
         <span class="jury-dday" id="juryDdayBadge">D-Day</span>
         <span id="jurySummaryText" data-i18n="juryUnset">마감 · 주리 D-Day 설정</span>
       </button>
-      <div class="try-strip" aria-label="빠른 체험" data-i18n-aria="tryAria">
-        <span data-i18n="tryLabel">파일 없이 바로 체험:</span>
-        <a href="https://atelier-4-2.github.io/quiz/" data-tool="quiz" data-i18n="tryQuiz">건축사 퀴즈</a>
-        <a href="https://atelier-4-2.github.io/site/" data-tool="terrain" data-i18n="tryTerrain">대지 분석</a>
-        <a href="./brief.html" data-i18n="tryBrief">프로젝트 브리프 카드</a>
+      <div class="try-strip" aria-label="빠른 도구" data-i18n-aria="quickAria">
+        <button type="button" id="quickCalcBtn" data-i18n="quickCalc">계산기</button>
+        <button type="button" id="glossaryBtn" data-i18n="quickGloss">용어 사전</button>
+        <button type="button" id="timerBtn" data-i18n="quickTimer">발표 타이머</button>
+        <a href="./brief.html" data-i18n="quickBrief">브리프 · QR</a>
       </div>
     </div>
 
@@ -856,47 +798,22 @@
         </ul>
         <a class="go" href="https://atelier-4-2.github.io/site/trait.html" data-tool="trait" data-i18n="t8Go">Trait 열기 ›</a>
       </li>
+      <li class="tool">
+        <div class="tool-top">
+          <p class="tool-num">09</p>
+          <span class="tool-badge" data-i18n="badgeKit">도구 모음</span>
+        </div>
+        <h2>Studio Kit</h2>
+        <p class="tool-kicker" data-i18n="t9Kicker">계산 · 도면 SVG · 주리 키트</p>
+        <p class="tool-desc" data-i18n="t9Desc">축척·CES·일조 계산기, 도면 SVG 그래픽, 인쇄 DPI 검사, 건축 용어 사전과 레퍼런스 스크랩북을 한곳에 모았습니다.</p>
+        <ul class="tool-list">
+          <li data-i18n="t9L1">스케일바 · 방위표 · 가로 단면 SVG</li>
+          <li data-i18n="t9L2">선 굵기 · 팔레트 · 인쇄 DPI · 경량화</li>
+          <li data-i18n="t9L3">일조 그림자 · 레퍼런스 스크랩북</li>
+        </ul>
+        <a class="go" href="./kit.html" data-tool="kit" data-i18n="t9Go">Studio Kit 열기 ›</a>
+      </li>
     </ul>
-
-    <section class="kit-section" aria-labelledby="kitSectionHeading">
-      <div class="kit-section-head">
-        <h2 id="kitSectionHeading" data-i18n="kitSecTitle">Studio Kit · 건축 실무 보조 도구</h2>
-        <span data-i18n="kitSecSub">계산 · 도면 그래픽 · 주리 발표 유틸리티를 3개 묶음으로 정리했습니다.</span>
-      </div>
-      <div class="kit-groups">
-        <div class="kit-group">
-          <h3 data-i18n="kg1Title">01 · 계산 · 기준</h3>
-          <p data-i18n="kg1Desc">축척·용지 변환, 건축 기준 치수, 레이저 판재 두께, CES/SDP 면적표, 일조·그림자 길이</p>
-          <div class="kit-chips">
-            <button type="button" class="kit-chip" data-open-calc="scale" data-i18n="tabScale">축척 · 용지</button>
-            <button type="button" class="kit-chip" data-open-calc="ref" data-i18n="tabRef">기준 치수 · 레이저</button>
-            <button type="button" class="kit-chip" data-open-calc="area" data-i18n="tabArea">면적 · CES/SDP</button>
-            <a class="kit-chip" href="./kit.html#calc" data-i18n="chipSun">일조 · 그림자 ›</a>
-          </div>
-        </div>
-        <div class="kit-group">
-          <h3 data-i18n="kg2Title">02 · 도면 그래픽 키트</h3>
-          <p data-i18n="kg2Desc">패널에 바로 붙이는 SVG 자산, 가로 단면 스케치, 선 굵기·컬러 팔레트, 로컬 이미지 압축</p>
-          <div class="kit-chips">
-            <a class="kit-chip" href="./kit.html#draw" data-i18n="chipScaleBar">스케일바 · 방위표 SVG ›</a>
-            <a class="kit-chip" href="./kit.html#draw" data-i18n="chipStreet">가로 단면 SVG ›</a>
-            <a class="kit-chip" href="./kit.html#draw" data-i18n="chipLine">선 굵기 · 팔레트 ›</a>
-            <a class="kit-chip" href="./kit.html#draw" data-i18n="chipComp">이미지 경량화 ›</a>
-          </div>
-        </div>
-        <div class="kit-group">
-          <h3 data-i18n="kg3Title">03 · 주리 · 발표 키트</h3>
-          <p data-i18n="kg3Desc">마감 D-Day·인쇄 전 점검, 발표 리허설 타이머, 한·불·영 건축 용어 사전, 브리프 & QR</p>
-          <div class="kit-chips">
-            <button type="button" class="kit-chip" id="kitJuryBtn" data-i18n="chipJury">D-Day · 인쇄 점검</button>
-            <button type="button" class="kit-chip" id="kitTimerBtn" data-i18n="timerTitle">발표 타이머</button>
-            <button type="button" class="kit-chip" id="kitGlossBtn" data-i18n="glossaryTitle">건축 용어 사전</button>
-            <a class="kit-chip" href="./kit.html#jury" data-i18n="chipRefs">레퍼런스 스크랩북 ›</a>
-            <a class="kit-chip" href="./brief.html" data-i18n="chipBrief">브리프 · QR ›</a>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer>
@@ -923,6 +840,7 @@
         <button type="button" class="modal-tab" role="tab" data-calc-tab="scale" aria-selected="true" data-i18n="tabScale">축척 · 용지</button>
         <button type="button" class="modal-tab" role="tab" data-calc-tab="ref" aria-selected="false" data-i18n="tabRef">기준 치수 · 레이저</button>
         <button type="button" class="modal-tab" role="tab" data-calc-tab="area" aria-selected="false" data-i18n="tabArea">면적 · CES/SDP</button>
+        <a class="modal-tab" href="./kit.html#calc" data-i18n="chipSun">일조 · 그림자 ›</a>
       </div>
       <div id="calcTabScale">
       <div class="scale-pills" id="scalePills" role="group" aria-label="축척 선택">
@@ -1099,6 +1017,9 @@
       <div class="timer-controls">
         <button type="button" class="btn primary" id="timerStartBtn" data-i18n="timerStart">시작</button>
         <button type="button" class="btn" id="timerResetBtn" data-i18n="timerReset">초기화</button>
+      </div>
+      <div class="feedback-bar" style="justify-content:center">
+        <a class="inline-link" href="https://atelier-4-2.github.io/crit/" data-tool="crit" data-i18n="timerCritLink">Crit에서 녹음하며 리허설 ›</a>
       </div>
     </div>
   </div>

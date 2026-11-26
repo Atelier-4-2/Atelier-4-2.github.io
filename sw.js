@@ -1,5 +1,5 @@
 /* Atelier 4·2 Hub Service Worker — offline-ready shell with network-first HTML/JS */
-const CACHE = 'atelier42-hub-v5';
+const CACHE = 'atelier42-hub-v6';
 const CORE = [
   './',
   './index.html',

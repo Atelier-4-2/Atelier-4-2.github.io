@@ -13,6 +13,7 @@ const TOOLS = {
   quiz:    { name: 'Quiz',    url: 'https://atelier-4-2.github.io/quiz/' },
   stair:   { name: 'Stair',   url: 'https://atelier-4-2.github.io/site/stair.html' },
   trait:   { name: 'Trait',   url: 'https://atelier-4-2.github.io/site/trait.html' },
+  kit:     { name: 'Studio Kit', url: './kit.html' },
 };
 
 const STR = {
@@ -102,6 +103,20 @@ const STR = {
     t8L2: '선 굵기·색별 자동 레이어 분리',
     t8L3: '축척 지정 · DXF 즉시 다운로드',
     t8Go: 'Trait 열기 ›',
+    badgeKit: '도구 모음',
+    t9Kicker: '계산 · 도면 SVG · 주리 키트',
+    t9Desc: '축척·CES·일조 계산기, 도면 SVG 그래픽, 인쇄 DPI 검사, 건축 용어 사전과 레퍼런스 스크랩북을 한곳에 모았습니다.',
+    t9L1: '스케일바 · 방위표 · 가로 단면 SVG',
+    t9L2: '선 굵기 · 팔레트 · 인쇄 DPI · 경량화',
+    t9L3: '일조 그림자 · 레퍼런스 스크랩북',
+    t9Go: 'Studio Kit 열기 ›',
+    quickAria: '빠른 도구',
+    quickCalc: '계산기',
+    quickGloss: '용어 사전',
+    quickTimer: '발표 타이머',
+    quickBrief: '브리프 · QR',
+    timerCritLink: 'Crit에서 녹음하며 리허설 ›',
+    refStairLink: 'Stair (SVG·DXF) ›',
     footerTag: '설치 없이 브라우저에서 바로 쓰는 도구',
     linkAbout: '소개',
     linkPrivacy: '개인정보',
@@ -275,6 +290,20 @@ const STR = {
     t8L2: 'Calques auto par épaisseur et couleur',
     t8L3: 'Choix d’échelle · Téléchargement DXF',
     t8Go: 'Ouvrir Trait ›',
+    badgeKit: 'Utilitaires',
+    t9Kicker: 'Calculs · SVG · Jury',
+    t9Desc: 'Calculateurs d’échelle, CES et ombres solaires, graphismes SVG, contrôle DPI d’impression, glossaire et carnet de références réunis.',
+    t9L1: 'Barre d’échelle · Nord · Coupe de rue SVG',
+    t9L2: 'Traits · Palettes · Contrôle DPI · Compression',
+    t9L3: 'Ombres solaires · Carnet de références',
+    t9Go: 'Ouvrir Studio Kit ›',
+    quickAria: 'Raccourcis',
+    quickCalc: 'Calculateur',
+    quickGloss: 'Glossaire',
+    quickTimer: 'Minuteur',
+    quickBrief: 'Brief · QR',
+    timerCritLink: 'Répéter avec enregistrement sur Crit ›',
+    refStairLink: 'Stair (SVG·DXF) ›',
     footerTag: 'Outils gratuits dans le navigateur, sans installation',
     linkAbout: 'À propos',
     linkPrivacy: 'Confidentialité',
@@ -915,6 +944,7 @@ function closeModal(id) {
 }
 
 document.getElementById('calcBtn')?.addEventListener('click', () => openModal('calcModal'));
+document.getElementById('quickCalcBtn')?.addEventListener('click', () => openModal('calcModal'));
 document.getElementById('footerCalcBtn')?.addEventListener('click', () => openModal('calcModal'));
 document.getElementById('changelogBtn')?.addEventListener('click', () => openModal('changelogModal'));
 
@@ -991,13 +1021,21 @@ function renderRefTables() {
       ['난간 높이', '1000 mm 이상 (추락고 큰 구간 1100 mm)'],
     ];
     dimBody.innerHTML = '';
-    for (const [k, v] of rows) {
+    rows.forEach(([k, v], idx) => {
       const tr = document.createElement('tr');
       const td1 = document.createElement('td'); td1.textContent = k;
       const td2 = document.createElement('td'); td2.textContent = v;
+      if (idx === 0) {
+        const br = document.createElement('br');
+        const link = document.createElement('a');
+        link.className = 'inline-link ref-sublink';
+        link.href = 'https://atelier-4-2.github.io/site/stair.html';
+        link.textContent = t('refStairLink');
+        td2.append(br, link);
+      }
       tr.append(td1, td2);
       dimBody.appendChild(tr);
-    }
+    });
   }
   const laserBody = document.getElementById('refLaserBody');
   if (laserBody) {
@@ -1447,6 +1485,7 @@ function getCmdActions() {
     { label: 'Quiz', sub: t('t6Kicker'), run: () => { location.href = TOOLS.quiz.url; } },
     { label: 'Stair', sub: t('t7Kicker'), run: () => { location.href = TOOLS.stair.url; } },
     { label: 'Trait', sub: t('t8Kicker'), run: () => { location.href = TOOLS.trait.url; } },
+    { label: 'Studio Kit', sub: t('t9Kicker'), run: () => { location.href = TOOLS.kit.url; } },
     { label: t('calcTitle'), sub: '1/20 – 1/1000 · A0–A4', run: () => openModal('calcModal') },
     { label: t('tabRef'), sub: 'PMR · Blondel · Laser', run: () => { openModal('calcModal'); document.querySelector('[data-calc-tab="ref"]')?.click(); } },
     { label: t('tabArea'), sub: 'CES · SDP · CSV', run: () => { openModal('calcModal'); document.querySelector('[data-calc-tab="area"]')?.click(); } },

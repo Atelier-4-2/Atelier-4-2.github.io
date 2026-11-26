@@ -54,6 +54,8 @@
       goHub: '허브로 돌아가기 ›', goBrief: '프로젝트 브리프 & QR 만들기 ›',
       jCard2: '외부 무료 참고 도구 (리서치 추천)',
       jCard2Desc: 'Atelier 4·2와 함께 쓰기 좋은 무료 브라우저 건축 도구들입니다.',
+      linkBoard: 'Board에서 바로 배치 ›',
+      linkTrait: 'Trait에서 PDF→DXF ›',
     },
     fr: {
       title: 'Studio Kit',
@@ -101,6 +103,8 @@
       goHub: 'Retour à l’accueil ›', goBrief: 'Créer une fiche projet & QR ›',
       jCard2: 'Outils web gratuits complémentaires',
       jCard2Desc: 'Sélection d’outils gratuits utiles en complément d’Atelier 4·2.',
+      linkBoard: 'Mettre en page sur Board ›',
+      linkTrait: 'Convertir PDF→DXF sur Trait ›',
     },
   };
   const t = (k) => (STR[lang] && STR[lang][k]) || STR.ko[k] || k;

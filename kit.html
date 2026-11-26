@@ -98,6 +98,15 @@
     .card.full { grid-column: 1 / -1; }
     .card h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.015em; }
     .card-desc { margin: -6px 0 0; font-size: 13px; color: var(--muted); }
+    .card-foot {
+      margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+    }
+    .cross-link {
+      font-size: 12px; font-weight: 600; color: var(--muted); text-decoration: none;
+      transition: color 120ms ease;
+    }
+    .cross-link:hover { color: var(--ink); text-decoration: underline; }
 
     .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 120px; }
@@ -264,6 +273,9 @@
           <button type="button" class="btn primary" id="sbCopyBtn" data-i18n="copySvg">SVG 복사</button>
           <button type="button" class="btn" id="sbDlBtn" data-i18n="dlSvg">SVG 다운로드</button>
         </div>
+        <div class="card-foot">
+          <a class="cross-link" href="https://atelier-4-2.github.io/board/" data-i18n="linkBoard">Board에서 바로 배치 ›</a>
+        </div>
       </article>
 
       <!-- 2. Street Section SVG Sketcher -->
@@ -282,6 +294,9 @@
         <div class="row" style="justify-content:space-between">
           <span style="font-size:13px;font-weight:700" id="streetTotal">총 폭: 15.0 m</span>
           <button type="button" class="btn primary" id="streetDlBtn" data-i18n="dlStreetSvg">가로 단면 SVG 다운로드</button>
+        </div>
+        <div class="card-foot">
+          <a class="cross-link" href="https://atelier-4-2.github.io/board/" data-i18n="linkBoard">Board에서 바로 배치 ›</a>
         </div>
       </article>
 
@@ -310,6 +325,9 @@
           <div class="row" id="extractedActions" style="margin-top:8px" hidden>
             <button type="button" class="btn" id="palSvgDlBtn" data-i18n="palSvgDl">팔레트 SVG 다운로드</button>
           </div>
+        </div>
+        <div class="card-foot">
+          <a class="cross-link" href="https://atelier-4-2.github.io/site/trait.html" data-i18n="linkTrait">Trait에서 PDF→DXF ›</a>
         </div>
       </article>
 
